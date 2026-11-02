@@ -1,0 +1,14 @@
+# Repository-local development and Jupyter runtime files
+.direnv/
+.jupyter/
+.ipynb_checkpoints/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Local data, checkpoints, and experiment outputs
+.data/
+data/
+checkpoints/
+runs/

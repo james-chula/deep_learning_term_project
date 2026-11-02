@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$project_root"
+
+export JUPYTER_PATH="$project_root/.jupyter/share/jupyter${JUPYTER_PATH:+:$JUPYTER_PATH}"
+exec python3.12 -m jupyterlab --notebook-dir="$project_root"

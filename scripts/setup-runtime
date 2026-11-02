@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+kernel_dir="$project_root/.jupyter/share/jupyter/kernels/bloodmnist-resnet"
+
+mkdir -p "$kernel_dir"
+
+python3.12 -m ipykernel install \
+  --prefix "$project_root/.jupyter" \
+  --name bloodmnist-resnet \
+  --display-name "Python (BloodMNIST ResNet)"
+
+cat <<EOF
+Registered the repository-local kernel:
+  Python (BloodMNIST ResNet)
+
+Start the notebook server with:
+  ./scripts/jupyter
+EOF
