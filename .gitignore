@@ -3,12 +3,18 @@
 .jupyter/
 .ipynb_checkpoints/
 
-# Python cache files
+# Python cache files and local virtual environment
 __pycache__/
 *.py[cod]
+.venv/
 
 # Local data, checkpoints, and experiment outputs
 .data/
 data/
 checkpoints/
 runs/
+
+# Generated data-audit artifacts; scripts and fixed split indices remain versioned
+artifacts/data_audit/*.csv
+artifacts/data_audit/*.json
+artifacts/data_audit/*.png

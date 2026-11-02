@@ -33,6 +33,7 @@
             packages = [
               pythonEnv
               pkgs.git
+              pkgs.stdenv.cc.cc.lib
               pkgs.uv
             ];
 
@@ -45,6 +46,7 @@
             PYTHONNOUSERSITE = "1";
 
             shellHook = ''
+              export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath [ pkgs.stdenv.cc.cc ]}:''${LD_LIBRARY_PATH:-}"
               export PROJECT_ROOT="$PWD"
               export VIRTUAL_ENV_DISABLE_PROMPT=1
               echo "BloodMNIST environment loaded. Run: ./scripts/setup-runtime"
