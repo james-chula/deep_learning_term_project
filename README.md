@@ -19,7 +19,7 @@ Afterward, entering the repository automatically loads the flake shell. Start Ju
 ./scripts/jupyter
 ```
 
-Open a notebook and select the **Python (BloodMNIST ResNet)** kernel. Its kernelspec is stored under `.jupyter/`, which is intentionally ignored by Git.
+Open a notebook and select the **Python (BloodMNIST ResNet)** kernel. The repository-local `.jupyter/` directory (intentionally ignored by Git) stores its kernel, JupyterLab settings, extensions/data, and transient server runtime files. Your global Jupyter settings in `~/.jupyter/` are not used when Jupyter is started through `./scripts/jupyter`.
 
 ### GPU note
 

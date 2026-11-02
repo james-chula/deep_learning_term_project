@@ -4,5 +4,11 @@ set -euo pipefail
 project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$project_root"
 
+# Keep kernels, settings, and temporary server files scoped to this repository.
 export JUPYTER_PATH="$project_root/.jupyter/share/jupyter${JUPYTER_PATH:+:$JUPYTER_PATH}"
+export JUPYTER_CONFIG_DIR="$project_root/.jupyter/config"
+export JUPYTER_DATA_DIR="$project_root/.jupyter/data"
+export JUPYTER_RUNTIME_DIR="$project_root/.jupyter/runtime"
+mkdir -p "$JUPYTER_CONFIG_DIR" "$JUPYTER_DATA_DIR" "$JUPYTER_RUNTIME_DIR"
+
 exec python3.12 -m jupyterlab --notebook-dir="$project_root"

@@ -4,7 +4,10 @@ set -euo pipefail
 project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 kernel_dir="$project_root/.jupyter/share/jupyter/kernels/bloodmnist-resnet"
 
-mkdir -p "$kernel_dir"
+mkdir -p "$kernel_dir" \
+  "$project_root/.jupyter/config" \
+  "$project_root/.jupyter/data" \
+  "$project_root/.jupyter/runtime"
 
 python3.12 -m ipykernel install \
   --prefix "$project_root/.jupyter" \

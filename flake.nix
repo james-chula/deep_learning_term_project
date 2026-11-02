@@ -36,8 +36,12 @@
               pkgs.uv
             ];
 
-            # Makes locally registered kernels visible only while working in this repo.
+            # Keep Jupyter resources, configuration, and transient runtime data
+            # inside this repository rather than in the user's home directory.
             JUPYTER_PATH = "${toString ./.}/.jupyter/share/jupyter";
+            JUPYTER_CONFIG_DIR = "${toString ./.}/.jupyter/config";
+            JUPYTER_DATA_DIR = "${toString ./.}/.jupyter/data";
+            JUPYTER_RUNTIME_DIR = "${toString ./.}/.jupyter/runtime";
             PYTHONNOUSERSITE = "1";
 
             shellHook = ''
