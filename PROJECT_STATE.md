@@ -77,4 +77,4 @@ A Colab launch exposed that MedMNIST 3.0.2 requires its configured root director
 
 ## 13 November 2026, 15:37 Asia/Bangkok — subset path source consolidated
 
-The user pushed notebook entry-point update eb45400958b1ec185d02821155b75426f5ac239e. The fixed 1% subset path now comes from audit_manifest.json rather than a duplicate config.py value; any programmatic override must match. Static suite: 12 tests passed with PYTHONPATH=src. No dataset was loaded and no experiment ran. Expected commit reference is the pending Project Lead commit containing this change; update to its SHA after commit.
+The user pushed notebook entry-point update eb45400958b1ec185d02821155b75426f5ac239e. The fixed 1% subset path now comes from audit_manifest.json rather than a duplicate config.py value; any programmatic override must match. Static suite: 12 tests passed with PYTHONPATH=src. No dataset was loaded and no experiment ran. Source commit: 3e9d6ee25fcee2f26c5157568a5ced807da42b04. The Colab launcher is pinned to this source commit.
