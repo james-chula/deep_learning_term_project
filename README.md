@@ -45,7 +45,7 @@ Do not replace the fixed 1% membership with a newly sampled subset. A planned co
 
 1. Confirm the Project Lead's designated, pushed commit and use that exact reviewed pin. Do not substitute an earlier pin.
 2. Open `notebooks/colab_run.ipynb` in Google Colab and select an NVIDIA T4 runtime.
-3. The notebook verifies T4, clones the repository, checks out its pin, installs `requirements-colab.txt`, and invokes `PYTHONPATH=src python run_experiment.py`.
+3. The notebook verifies T4, removes any stale /content/project checkout, clones the repository, checks out its pin, installs requirements-colab.txt, and invokes the entry point with MEDMNIST_DATA_ROOT=/content/medmnist. Dataset files therefore stay outside the repository checkout under /content/medmnist.
 4. Before a run, select the intended `CONFIG["mode"]` and training fraction in `config.py`; commit and pin that configuration change before Colab execution.
 5. Inspect or download the resulting `outputs/<timestamp>_<run-name>_<mode>/` evidence directory. Retain it with its source commit and configuration.
 
