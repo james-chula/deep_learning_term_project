@@ -1,8 +1,8 @@
 # Project state
 
-**Last updated:** 13 November 2026, 14:11 Asia/Bangkok
+**Last updated:** 13 November 2026, 14:40 Asia/Bangkok
 **Project:** BloodMNIST Deep Learning Term Project
-**Execution status:** No Colab experiment has run. No validation metrics, checkpoints, curves, or run evidence exist.
+**Execution status:** A first Colab launch reached provider audit validation and stopped before dataset construction or training because class-3 label whitespace differed between the audit artifact and MedMNIST 3.0.2. No experiment completed; no validation metrics, checkpoints, curves, or run evidence exist.
 
 ## Current approved implementation
 
@@ -63,3 +63,8 @@ Removed as obsolete after active replacement: old separate baseline runner, metr
 **Blocker:** no Colab T4 execution authorization for the final Lead-reviewed pinned commit.
 **Owner:** Project Lead for Git/pin; user for explicit execution approval.
 **Next action:** Project Lead pushes the follow-up launcher-pin commit, then waits for explicit user authorization before any Colab T4 run. No Colab run is authorized by this Git action alone.
+
+
+## 13 November 2026, 14:40 Asia/Bangkok — Colab audit-validation correction
+
+The first Colab launch at source cbfc3d741cb00eb9eccd568a09aa60e789f37646 stopped before dataset construction because the audit artifact has a space before the class-3 parenthesis while MedMNIST 3.0.2 does not. Validation now canonicalizes only repeated whitespace and whitespace immediately before an opening parenthesis while retaining exact class-ID and semantic-label checks. Focused tests cover cosmetic whitespace, meaningful changes, swapped assignments, missing IDs, and non-string labels. Static suite: 10 tests passed. No dataset was loaded and no experiment ran during this correction. The expected/current commit reference will be replaced by the verified pushed commit.

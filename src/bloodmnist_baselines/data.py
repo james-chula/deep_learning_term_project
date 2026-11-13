@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from dataclasses import dataclass
 from hashlib import md5, sha256
 from pathlib import Path
@@ -47,6 +48,28 @@ def _md5(path: str | Path) -> str:
     return digest.hexdigest()
 
 
+def _canonical_label(value: Any) -> str:
+    """Normalize only insignificant class-label whitespace."""
+    if not isinstance(value, str):
+        raise ValueError("Audit manifest class labels must be strings.")
+    normalized = re.sub(r"\s+", " ", value.strip())
+    return re.sub(r"\s+\(", "(", normalized)
+
+
+def _validate_class_mapping(raw_mapping: Any) -> None:
+    if not isinstance(raw_mapping, dict):
+        raise ValueError("Audit manifest class mapping must be an object.")
+    try:
+        observed = {int(key): _canonical_label(value) for key, value in raw_mapping.items()}
+    except (TypeError, ValueError) as error:
+        raise ValueError("Audit manifest class mapping is invalid.") from error
+    expected = {key: _canonical_label(value) for key, value in CLASS_NAMES.items()}
+    if set(observed) != set(expected):
+        raise ValueError("Audit manifest class IDs differ from BloodMNIST.")
+    if observed != expected:
+        raise ValueError("Audit manifest class mapping differs from BloodMNIST.")
+
+
 def _audit(path: str | Path) -> tuple[dict[str, Any], str]:
     path = Path(path)
     if not path.is_file():
@@ -58,9 +81,7 @@ def _audit(path: str | Path) -> tuple[dict[str, Any], str]:
         raise ValueError("Audit manifest does not match the official 28px archive.")
     if manifest.get("provider_split_sizes") != EXPECTED_SPLIT_COUNTS:
         raise ValueError("Audit manifest does not match official split counts.")
-    observed_mapping = {int(key): value for key, value in manifest.get("class_mapping", {}).items()}
-    if observed_mapping != CLASS_NAMES:
-        raise ValueError("Audit manifest class mapping differs from BloodMNIST.")
+    _validate_class_mapping(manifest.get("class_mapping"))
     if not isinstance(manifest.get("source_local_sha256"), str):
         raise ValueError("Audit manifest is missing the recorded source SHA-256.")
     return manifest, _sha256(path)

@@ -2,6 +2,9 @@ import ast
 import json
 from pathlib import Path
 import unittest
+import sys
+import types
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -46,6 +49,61 @@ class SimpleWorkflowStaticTests(unittest.TestCase):
         self.assertIn("python run_experiment.py", text)
         self.assertNotIn("DataLoader(", text)
         self.assertNotIn("resnet18(", text)
+
+
+class ProviderAuditValidationTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        manifest = json.loads((ROOT / "artifacts/data_audit/audit_manifest.json").read_text(encoding="utf-8"))
+        labels = {str(key): value for key, value in manifest["class_mapping"].items()}
+        labels["3"] = labels["3"].replace("granulocytes (", "granulocytes(")
+        medmnist = types.ModuleType("medmnist")
+        medmnist.BloodMNIST = type("BloodMNIST", (), {})
+        medmnist.INFO = {"bloodmnist": {"label": labels}}
+        torch = types.ModuleType("torch")
+        torch_utils = types.ModuleType("torch.utils")
+        torch_data = types.ModuleType("torch.utils.data")
+        torch_data.Dataset = type("Dataset", (), {})
+        torch_data.Subset = type("Subset", (), {})
+        modules = {"medmnist": medmnist, "torch": torch, "torch.utils": torch_utils, "torch.utils.data": torch_data}
+        with patch.dict(sys.modules, modules):
+            from bloodmnist_baselines import data as provider_data
+        cls.provider_data = provider_data
+        cls.upstream = dict(provider_data.CLASS_NAMES)
+
+    def validate(self, mapping):
+        with patch.object(self.provider_data, "CLASS_NAMES", self.upstream):
+            self.provider_data._validate_class_mapping(mapping)
+
+    def test_space_before_parenthesis_is_cosmetic(self):
+        mapping = {str(key): value for key, value in self.upstream.items()}
+        mapping["3"] = mapping["3"].replace("granulocytes(", "granulocytes (")
+        self.validate(mapping)
+        self.validate({str(key): value for key, value in self.upstream.items()})
+
+    def test_meaningful_label_change_fails(self):
+        mapping = {str(key): value for key, value in self.upstream.items()}
+        mapping["3"] = mapping["3"].replace("immature", "mature")
+        with self.assertRaisesRegex(ValueError, "class mapping differs"):
+            self.validate(mapping)
+
+    def test_swapped_assignments_fail(self):
+        mapping = {str(key): value for key, value in self.upstream.items()}
+        mapping["6"], mapping["7"] = mapping["7"], mapping["6"]
+        with self.assertRaisesRegex(ValueError, "class mapping differs"):
+            self.validate(mapping)
+
+    def test_missing_or_extra_id_fails(self):
+        mapping = {str(key): value for key, value in self.upstream.items()}
+        mapping.pop("7")
+        with self.assertRaisesRegex(ValueError, "class IDs differ"):
+            self.validate(mapping)
+
+    def test_non_string_label_fails(self):
+        mapping = {str(key): value for key, value in self.upstream.items()}
+        mapping["3"] = None
+        with self.assertRaisesRegex(ValueError, "class mapping is invalid"):
+            self.validate(mapping)
 
 
 if __name__ == "__main__":

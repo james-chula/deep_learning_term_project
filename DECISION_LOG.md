@@ -27,3 +27,8 @@ The shared provider build_provider_datasets(*, audit_manifest_path, image_size, 
 ## 13 November 2026, 14:11 Asia/Bangkok — defer controlled-matrix interface
 
 User approved deferral of the controlled-matrix interface: augmentation on/off, learning-rate candidate/stage, seed-role, and expanded comparable-condition metadata are not included in this stabilization push. The existing committed configuration still documents the 1% versus 100% data-fraction selection. No controlled-matrix run is authorized until the deferred controls and evidence contract are implemented and reviewed.
+
+
+## 13 November 2026, 14:40 Asia/Bangkok — narrowly normalize provider class-label whitespace
+
+The audit/provider class mapping comparison may ignore repeated whitespace and whitespace immediately before an opening parenthesis. Class IDs and all semantic label text remain strict. This addresses the MedMNIST 3.0.2 class-3 formatting difference without changing the audited artifact or weakening provenance validation.
