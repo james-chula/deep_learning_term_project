@@ -30,7 +30,7 @@
 | Pre-integration commit | `4a79828768794d86531c8df1b5743c42ec563a09` — corrected report reproducibility state |
 | Working tree before this commit | Baseline package, fixed manifest/audit artifacts, thin baseline launcher, and training integration specification under Lead review/integration |
 | Stabilized provider/API commit | 8a637d34017bce6311225b82fd5d3a6563d7dd26 — canonical provider interface added after static review; no data load or experiment occurred. |
-| Baseline notebook pin | The thin baseline notebook is being updated in the next stabilization commit; do not run it until the Project Lead announces that exact pushed SHA. |
+| Baseline launcher commit | 74ca0681aa21fdedcbd2a85f9793f71c2ad4174f — thin launcher committed and pushed; it checks out approved baseline code SHA 8a637d34017bce6311225b82fd5d3a6563d7dd26. No result evidence exists. |
 
 ## Decisions and rationale
 
@@ -114,7 +114,7 @@
 | Canonical data source | Audit manifest identifies official 28px archive MD5 `7053d0359d879ad8a5505303e11de1dc`; training/resnet code must resize deterministically to 224px. | 224px archive checksum is reference-only; do not introduce another loader or split. |
 | Canonical provider interface | `bloodmnist_baselines.build_provider_datasets(*, audit_manifest_path, image_size, train_transform, val_transform, subset_manifest_path=None) -> ProviderDatasets(train, val, metadata)`. It returns no test dataset and records `test_policy=locked_not_loaded`. | This is the only approved provider API. Training must adapt to it; do not change the baseline interface to `build_train_val`. |
 | Training pipeline | The new bundle is staged only and not yet reviewed/integrated. Its provider specification conflicts with the canonical API. | No fine-tuning/scratch Colab SHA exists and no training may run. |
-| Colab execution | No Colab URL, GPU evidence, result JSON, or metrics exist. | All execution remains blocked pending a post-stabilization lead-approved commit and notebook pin verification. |
+| Colab execution | No Colab URL, GPU evidence, result JSON, or metrics exist. | Baseline execution is eligible only through launcher 74ca0681aa21fdedcbd2a85f9793f71c2ad4174f, which checks out code SHA 8a637d34017bce6311225b82fd5d3a6563d7dd26; no execution is currently underway. |
 
 ### Stable-base gate
 
