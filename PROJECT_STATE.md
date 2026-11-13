@@ -2,13 +2,13 @@
 
 **Project:** Blood Cell Classification with ResNet-18
 **Course:** 2102666 Fundamentals of Deep Learning and Applications
-**Last updated:** 13 November 2026, 10:31 Asia/Bangkok
+**Last updated:** 13 November 2026, 10:38 Asia/Bangkok
 **Git authority:** Project Lead exclusively manages repository access, status, branches, pulls, commits, pushes, and Colab commit pinning. Teammates must not perform Git operations unless explicitly delegated a named action.
 
 ## Current status
 
 **Phase:** Progress-report implementation and evidence collection.
-**Overall:** Documentation and the baseline implementation package are integrated locally pending this commit. No Colab experiment has run; validation evidence and the fine-tuning pipeline remain outstanding.
+**Overall:** Documentation and the baseline implementation package are committed at 5db586c7b37b3585051c88379502ab6c9f2e546c. No Colab experiment has run. The staged fine-tuning package was reviewed and rejected as non-executable; validation evidence and a complete pipeline remain outstanding.
 
 ## Timeline
 
@@ -93,3 +93,10 @@
 3. Colab clones or updates to that exact announced commit, then invokes the thin launcher with a named configuration.
 4. Every experiment records configuration, seed, runtime, validation metrics, artifact locations, and commit reference.
 5. Update this file and relevant documentation whenever status, decisions, evidence, dependencies, or blockers change.
+
+## Lead review update — 13 November 2026, 10:38 Asia/Bangkok
+
+- Verified repository HEAD: 5db586c7b37b3585051c88379502ab6c9f2e546c; baseline paths and fixed-manifest contract are tracked. This remains the only authorized baseline-only Colab T4 commit.
+- Reviewed the complete staged training bundle, not only its spec. It is not executable: the committed baseline package lacks the required build_provider_datasets / ProviderDatasets API, and run_training deliberately writes a blocked_adapter ledger record then raises NotImplementedError. It also lacks the training/validation engine, metrics, transforms, and reporting integration.
+- The staged training launcher is a .py file, not the required thin GitHub-imported Colab notebook. No training commit and no training Colab run are authorized.
+- Requests issued: Data & Baseline Engineer to stage the canonical provider adapter; Training Engineer to stage the complete compatible validation-only implementation and .ipynb launcher.
