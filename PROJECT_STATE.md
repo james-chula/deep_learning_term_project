@@ -2,13 +2,13 @@
 
 **Project:** Blood Cell Classification with ResNet-18
 **Course:** 2102666 Fundamentals of Deep Learning and Applications
-**Last updated:** 13 November 2026, 11:02 Asia/Bangkok
+**Last updated:** 13 November 2026, 11:09 Asia/Bangkok
 **Git authority:** Project Lead exclusively manages repository access, status, branches, pulls, commits, pushes, and Colab commit pinning. Teammates must not perform Git operations unless explicitly delegated a named action.
 
 ## Current status
 
 **Phase:** Progress-report implementation and evidence collection.
-**Overall:** Baseline implementation is committed at `5db586c7b37b3585051c88379502ab6c9f2e546c`; no Colab experiment has run. The repository has a fixed canonical train/validation provider API at `8a637d34017bce6311225b82fd5d3a6563d7dd26`. Fine-tuning code remains staged only and is not executable from an authorized SHA.
+**Overall:** Baseline implementation is committed at `5db586c7b37b3585051c88379502ab6c9f2e546c`; no Colab experiment has run. The repository has a fixed canonical train/validation provider API at `8a637d34017bce6311225b82fd5d3a6563d7dd26`. Validation-only fine-tuning code is integrated at 693f658c6c48318f88377e6552e9117cf4aa7a02; the thin Colab launcher is committed at 7813d4b50132a1178864a4f1a48df82d0927c233 and checks out the code SHA. No experiment has run.
 
 ## Timeline
 
@@ -126,3 +126,10 @@
 ### Stable-base gate
 
 Before any experiment authorization: (1) re-verify `main == origin/main` and a clean tree; (2) require every thin notebook to contain the exact approved full SHA; (3) complete a static review of any training integration against the fixed provider API; (4) commit and push the reviewed training integration; (5) update this file with the new expected/current commit. Test data remain locked.
+
+## Commit and launcher designation — 13 November 2026, 11:09 Asia/Bangkok
+
+- Training code commit: `693f658c6c48318f88377e6552e9117cf4aa7a02`.
+- Thin Colab launcher commit: `7813d4b50132a1178864a4f1a48df82d0927c233`. Its checkout cell pins the training code commit above, not an unreviewed branch tip.
+- Static verification passed for training Python sources, notebook JSON, configuration loading, and direct provider-module resolution up to the unavailable optional MedMNIST dependency. No runtime data/model operation was performed.
+- Current next action: Project Lead pushes the commits; a future authorized run must use the Colab T4 launcher and retain generated validation-only artifacts.
