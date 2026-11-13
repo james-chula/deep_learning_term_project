@@ -2,13 +2,13 @@
 
 **Project:** Blood Cell Classification with ResNet-18
 **Course:** 2102666 Fundamentals of Deep Learning and Applications
-**Last updated:** 13 November 2026, 11:09 Asia/Bangkok
+**Last updated:** 13 November 2026, 11:34 Asia/Bangkok
 **Git authority:** Project Lead exclusively manages repository access, status, branches, pulls, commits, pushes, and Colab commit pinning. Teammates must not perform Git operations unless explicitly delegated a named action.
 
 ## Current status
 
 **Phase:** Progress-report implementation and evidence collection.
-**Overall:** Baseline implementation is committed at `5db586c7b37b3585051c88379502ab6c9f2e546c`; no Colab experiment has run. The repository has a fixed canonical train/validation provider API at `8a637d34017bce6311225b82fd5d3a6563d7dd26`. Validation-only fine-tuning code is integrated at 693f658c6c48318f88377e6552e9117cf4aa7a02; the thin Colab launcher is committed at 7813d4b50132a1178864a4f1a48df82d0927c233 and checks out the code SHA. No experiment has run.
+**Overall:** Simplified procedural validation-only fine-tuning is committed and pushed. The designated launcher checks out its reviewed code and documentation commit before invoking the simple root entry point. No Colab experiment has run.
 
 ## Timeline
 
