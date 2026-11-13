@@ -1,6 +1,6 @@
 # Project state
 
-**Last updated:** 13 November 2026, 20:40 Asia/Bangkok
+**Last updated:** 13 November 2026, 21:24 Asia/Bangkok
 **Project:** BloodMNIST Deep Learning Term Project
 **Execution status:** Stage-by-stage progress-report Colab workflow implemented and statically verified. The user supplied one completed validation result (accuracy 0.7383, macro-F1 0.6956, macro OvR ROC-AUC 0.9613; n=1,712), but its run provenance/artifact bundle still requires verification before formal report inclusion.
 
@@ -91,3 +91,8 @@ The Colab notebook now exposes runtime/provenance, configuration, data audit and
 ## 13 November 2026, 21:13 Asia/Bangkok — concise plot label alias
 
 Added `display_class_name()` to modular Python and updated the notebook sample visualization to use it. Class ID 3 is displayed as `immature granulocytes`; canonical audit/metric class names remain unchanged. Static suite: 14 tests passed; Python compilation and notebook JSON validation passed. No experiment ran on the Team Computer. Source commit: `6b71dff8ea41fb599cc33497de88c56700900881`; launcher pin commit: `f72c850d96c1f43197f548d41db3f4936b23306f`.
+
+
+## 13 November 2026, 21:24 Asia/Bangkok — safe Colab reclone working directory
+
+Added the Colab content-directory change before removing and cloning the project checkout, preventing stale-current-directory failures when the setup cell is rerun from inside the prior checkout. Notebook structure check and diff check passed. No experiment ran. Launcher fix commit: ff691e9c.
