@@ -73,4 +73,4 @@ The first Colab launch at source cbfc3d741cb00eb9eccd568a09aa60e789f37646 stoppe
 
 ## 13 November 2026, 14:45 Asia/Bangkok — MedMNIST root creation correction
 
-A Colab launch exposed that MedMNIST 3.0.2 requires its configured root directory to exist before dataset initialization. The provider now creates MEDMNIST_DATA_ROOT (default .data/medmnist) with parent directories before constructing train or validation datasets. A regression check enforces this ordering. No dataset or experiment was run for this correction. Expected commit reference: pending Lead commit/push.
+A Colab launch exposed that MedMNIST 3.0.2 requires its configured root directory to exist before dataset initialization. The provider now creates MEDMNIST_DATA_ROOT (default .data/medmnist) with parent directories before constructing train or validation datasets. A regression check enforces this ordering. No dataset or experiment was run for this correction. Corrected source commit: a7a4cd2ea490416374b95fb6301a129b5f190803. The Colab launcher is pinned to this source commit.
