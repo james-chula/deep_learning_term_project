@@ -3,6 +3,7 @@
 The shared provider constructs only official train and validation data. The test
 set is not constructed, exposed, or evaluated by this workflow.
 """
+import json
 from pathlib import Path
 
 from torch.utils.data import DataLoader
@@ -34,15 +35,26 @@ def make_transforms(image_size):
 def get_data_loaders(config):
     """Return train/validation loaders and the provider's locked-test provenance."""
     train_transform, validation_transform = make_transforms(config["image_size"])
-    if config["use_fixed_1pct_subset"] and not config["subset_manifest_path"]:
-        raise ValueError("Fixed 1% mode requires its committed subset manifest; no full-data fallback exists.")
-    subset_path = config["subset_manifest_path"] if config["use_fixed_1pct_subset"] else None
+    audit_path = Path(config["audit_manifest_path"])
+    subset_path = None
+    if config["use_fixed_1pct_subset"]:
+        if not audit_path.is_file():
+            raise FileNotFoundError(f"Audit manifest not found: {audit_path}")
+        audit = json.loads(audit_path.read_text(encoding="utf-8"))
+        declared_subset = audit.get("subset_manifest")
+        if not isinstance(declared_subset, str) or not declared_subset.strip():
+            raise ValueError("Fixed 1% mode requires subset_manifest in the audit manifest; no full-data fallback exists.")
+        # Audit paths are repository-root-relative, matching audit_manifest_path.
+        subset_path = Path(declared_subset)
+        configured_override = config.get("subset_manifest_path")
+        if configured_override is not None and Path(configured_override) != subset_path:
+            raise ValueError("Configured subset manifest override differs from the audited subset manifest.")
     datasets = build_provider_datasets(
-        audit_manifest_path=Path(config["audit_manifest_path"]),
+        audit_manifest_path=audit_path,
         image_size=config["image_size"],
         train_transform=train_transform,
         val_transform=validation_transform,
-        subset_manifest_path=Path(subset_path) if subset_path else None,
+        subset_manifest_path=subset_path,
     )
     metadata = datasets.metadata
     if metadata.get("test_policy") != "locked_not_loaded":

@@ -56,7 +56,7 @@ The notebook contains no data-loading, model, training, or evaluation implementa
 - Execution input is the official 28×28 BloodMNIST archive. Its required MD5 is `7053d0359d879ad8a5505303e11de1dc`; the audited local SHA-256 is recorded in `artifacts/data_audit/audit_manifest.json`.
 - Official provider split sizes are 11,959 train / 1,712 validation / 3,421 locked test. The test count is provenance only: test data are never loaded by the active workflow.
 - Official 28×28 images are resized exactly once to 224×224 in `data.py` transforms. A separately distributed 224px archive checksum is reference-only, not the active execution-input checksum.
-- The fixed 1% setting requires `splits/bloodmnist_train_1pct_seed2026.npz`; a missing or invalid manifest fails rather than silently using full training data.
+- The fixed 1% setting resolves the subset path from the audit manifest (currently splits/bloodmnist_train_1pct_seed2026.npz); a missing or invalid declaration/file fails rather than silently using full training data. config.py does not duplicate this path.
 - The fixed manifest applies only to training; validation always uses the full official validation split.
 - `best_model.pt` for neural modes is selected only by validation macro-F1. Validation does not update weights.
 - No final test evaluation can occur in this workflow because no test dataset is loaded. Do not use validation results to claim final test performance.

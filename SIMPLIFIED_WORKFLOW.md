@@ -30,7 +30,7 @@ T4 check -> seed -> train/validation data -> selected mode -> validation -> save
 - Provider constructs only official training and validation datasets.
 - Test data cannot be requested through the active API.
 - Source image size is checked as 28 and transformed once to 224.
-- A requested 1% run requires the versioned fixed-subset manifest and cannot fall back to full training data.
+- A requested 1% run resolves the versioned fixed-subset path from the audit manifest and cannot fall back to full training data; configuration does not duplicate that path.
 - Validation does not call an optimizer or update weights.
 - Neural `best_model.pt` is saved only when validation macro-F1 improves.
 - All summaries record `test_evaluated: false`.

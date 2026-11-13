@@ -32,3 +32,7 @@ User approved deferral of the controlled-matrix interface: augmentation on/off, 
 ## 13 November 2026, 14:40 Asia/Bangkok — narrowly normalize provider class-label whitespace
 
 The audit/provider class mapping comparison may ignore repeated whitespace and whitespace immediately before an opening parenthesis. Class IDs and all semantic label text remain strict. This addresses the MedMNIST 3.0.2 class-3 formatting difference without changing the audited artifact or weakening provenance validation.
+
+## 13 November 2026, 15:37 Asia/Bangkok — audit manifest owns fixed-subset path
+
+The fixed 1% subset path is resolved from the audit manifest subset_manifest field. config.py no longer duplicates it. A compatibility override, if supplied programmatically, must equal the audited path or execution fails. This removes divergent sources of truth while preserving strict no-fallback behavior.

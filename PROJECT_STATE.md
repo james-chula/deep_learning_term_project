@@ -1,6 +1,6 @@
 # Project state
 
-**Last updated:** 13 November 2026, 14:45 Asia/Bangkok
+**Last updated:** 13 November 2026, 15:37 Asia/Bangkok
 **Project:** BloodMNIST Deep Learning Term Project
 **Execution status:** A first Colab launch reached provider audit validation and stopped before dataset construction or training because class-3 label whitespace differed between the audit artifact and MedMNIST 3.0.2. No experiment completed; no validation metrics, checkpoints, curves, or run evidence exist.
 
@@ -74,3 +74,7 @@ The first Colab launch at source cbfc3d741cb00eb9eccd568a09aa60e789f37646 stoppe
 ## 13 November 2026, 14:45 Asia/Bangkok — MedMNIST root creation correction
 
 A Colab launch exposed that MedMNIST 3.0.2 requires its configured root directory to exist before dataset initialization. The provider now creates MEDMNIST_DATA_ROOT (default .data/medmnist) with parent directories before constructing train or validation datasets. A regression check enforces this ordering. No dataset or experiment was run for this correction. Corrected source commit: a7a4cd2ea490416374b95fb6301a129b5f190803. The Colab launcher is pinned to this source commit.
+
+## 13 November 2026, 15:37 Asia/Bangkok — subset path source consolidated
+
+The user pushed notebook entry-point update eb45400958b1ec185d02821155b75426f5ac239e. The fixed 1% subset path now comes from audit_manifest.json rather than a duplicate config.py value; any programmatic override must match. Static suite: 12 tests passed with PYTHONPATH=src. No dataset was loaded and no experiment ran. Expected commit reference is the pending Project Lead commit containing this change; update to its SHA after commit.

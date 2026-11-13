@@ -17,6 +17,5 @@ CONFIG = {
     "num_classes": 8,
     "use_fixed_1pct_subset": True,
     "audit_manifest_path": "artifacts/data_audit/audit_manifest.json",
-    "subset_manifest_path": "splits/bloodmnist_train_1pct_seed2026.npz",
     "output_root": "outputs",
 }
