@@ -1,8 +1,8 @@
 # Project state
 
-**Last updated:** 13 November 2026, 18:05 Asia/Bangkok
+**Last updated:** 13 November 2026, 20:40 Asia/Bangkok
 **Project:** BloodMNIST Deep Learning Term Project
-**Execution status:** A first Colab launch reached provider audit validation and stopped before dataset construction or training because class-3 label whitespace differed between the audit artifact and MedMNIST 3.0.2. No experiment completed; no validation metrics, checkpoints, curves, or run evidence exist.
+**Execution status:** Stage-by-stage progress-report Colab workflow implemented and statically verified. The user supplied one completed validation result (accuracy 0.7383, macro-F1 0.6956, macro OvR ROC-AUC 0.9613; n=1,712), but its run provenance/artifact bundle still requires verification before formal report inclusion.
 
 ## Current approved implementation
 
@@ -82,3 +82,8 @@ The user pushed notebook entry-point update eb45400958b1ec185d02821155b75426f5ac
 ## 13 November 2026, 18:05 Asia/Bangkok — Colab checkout and data-root isolation
 
 The Colab launcher now removes any stale /content/project directory before cloning and sets MEDMNIST_DATA_ROOT=/content/medmnist for the entry-point process. BloodMNIST data therefore resides outside the repository checkout under /content, while repository deletion/reclone does not target the dataset directory. Notebook structure and command assertions passed; no dataset was downloaded and no experiment ran. Source commit: b34cc5ed882b3d059d53465bbd9f72e8572af175. The launcher is pinned to this source commit; the following documentation-only commit publishes the pin.
+
+
+## 13 November 2026, 20:40 Asia/Bangkok — stage-by-stage progress-report notebook
+
+The Colab notebook now exposes runtime/provenance, configuration, data audit and samples, model/setup inspection, training, curves, explicit best-checkpoint reload and validation, confusion matrices, per-class metrics, misclassification examples, and evidence ZIP export as separate stages while reusing modular Python APIs. The CLI remains supported. Test loading remains absent. Adversarial review found no correctness blocker; 13/13 static unit tests passed and active Python compiled. Expected source commit and final notebook pin are pending Project Lead commit/push. No experiment ran on the Team Computer.

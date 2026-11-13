@@ -62,6 +62,28 @@ class SimpleWorkflowStaticTests(unittest.TestCase):
         self.assertIn("python run_experiment.py", text)
         self.assertNotIn("DataLoader(", text)
         self.assertNotIn("resnet18(", text)
+        for stage in [
+            "Runtime and source provenance", "Configuration", "Audited data and sample visualization",
+            "Model summary", "Training setup and evidence directory", "Training", "Learning curves",
+            "Reload selected checkpoint and validate", "Validation diagnostics",
+            "Finalize and download artifact ZIP",
+        ]:
+            self.assertIn(stage, text)
+        for shared_api in [
+            "get_data_loaders", "create_model", "train_neural_mode",
+            "evaluate_best_checkpoint", "save_validation_diagnostics", "create_artifact_zip",
+        ]:
+            self.assertIn(shared_api, text)
+        self.assertIn('provider_metadata["test_policy"] == "locked_not_loaded"', text)
+        self.assertIn('set_seed(CONFIG["seed"])  # reset after sample/model-preview cells', text)
+
+    def test_selected_checkpoint_diagnostics_and_archive_are_shared(self):
+        source = self.read("run_experiment.py")
+        self.assertIn("def evaluate_best_checkpoint", source)
+        self.assertIn('checkpoint_path = Path(output_folder) / "best_model.pt"', source)
+        self.assertIn("def save_validation_diagnostics", source)
+        self.assertIn("def create_artifact_zip", source)
+        self.assertIn("evaluate_best_checkpoint(mode, validation_loader", source)
 
 
 class ProviderAuditValidationTests(unittest.TestCase):

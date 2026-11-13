@@ -11,13 +11,14 @@ import json
 import random
 import subprocess
 import os
+import shutil
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
 import torch
-from sklearn.metrics import classification_report, roc_auc_score
+from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
 
 from config import CONFIG
 from data import get_data_loaders
@@ -147,7 +148,130 @@ def train_neural_mode(mode, train_loader, validation_loader, device, output_fold
     return best_epoch, best_f1, validation_metrics(best_metrics["labels"], best_metrics["predictions"], best_metrics["probabilities"]), history
 
 
+def class_names_from_audit(audit_manifest_path):
+    """Return class names ordered by integer class ID from the audited manifest."""
+    manifest = json.loads(Path(audit_manifest_path).read_text(encoding="utf-8"))
+    mapping = manifest.get("class_mapping")
+    if not isinstance(mapping, dict):
+        raise ValueError("Audit manifest is missing class_mapping.")
+    expected = list(range(CONFIG["num_classes"]))
+    observed = sorted(int(key) for key in mapping)
+    if observed != expected:
+        raise ValueError("Audit class IDs do not match configured classes.")
+    return [mapping[str(index)] for index in expected]
+
+
+def evaluate_best_checkpoint(mode, validation_loader, device, output_folder):
+    """Reload and evaluate the macro-F1-selected neural checkpoint on validation."""
+    if mode not in {"linear_probe", "finetune"}:
+        raise ValueError("Best-checkpoint evaluation applies only to neural modes.")
+    checkpoint_path = Path(output_folder) / "best_model.pt"
+    if not checkpoint_path.is_file():
+        raise FileNotFoundError(f"Selected checkpoint not found: {checkpoint_path}")
+    model = create_model(CONFIG["num_classes"], mode).to(device)
+    checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=True)
+    model.load_state_dict(checkpoint["model_state_dict"])
+    result = validate(model, validation_loader, torch.nn.CrossEntropyLoss(), device)
+    return model, checkpoint["epoch"], result
+
+
+def save_confusion_matrices(labels, predictions, class_names, output_folder):
+    """Save count and row-normalized validation confusion matrices."""
+    import matplotlib.pyplot as plt
+    classes = list(range(len(class_names)))
+    counts = confusion_matrix(labels, predictions, labels=classes)
+    row_totals = counts.sum(axis=1, keepdims=True)
+    normalized = np.divide(counts, row_totals, out=np.zeros_like(counts, dtype=float), where=row_totals != 0)
+    for matrix, title, filename, fmt in [
+        (counts, "Validation confusion matrix (counts)", "confusion_matrix_counts.png", "d"),
+        (normalized, "Validation confusion matrix (row-normalized)", "confusion_matrix_normalized.png", ".2f"),
+    ]:
+        figure, axis = plt.subplots(figsize=(10, 8))
+        image = axis.imshow(matrix, cmap="Blues", vmin=0, vmax=None if fmt == "d" else 1)
+        axis.set(xticks=classes, yticks=classes, xticklabels=class_names, yticklabels=class_names,
+                 xlabel="Predicted class", ylabel="True class", title=title)
+        plt.setp(axis.get_xticklabels(), rotation=45, ha="right")
+        threshold = float(matrix.max()) / 2 if matrix.size else 0
+        for row in classes:
+            for column in classes:
+                value = format(matrix[row, column], fmt)
+                axis.text(column, row, value, ha="center", va="center",
+                          color="white" if matrix[row, column] > threshold else "black", fontsize=8)
+        figure.colorbar(image, ax=axis)
+        figure.tight_layout()
+        figure.savefig(Path(output_folder) / filename, dpi=150)
+        plt.close(figure)
+
+
+def save_per_class_chart(metrics, class_names, output_folder):
+    """Save grouped validation precision/recall/F1 bars."""
+    import matplotlib.pyplot as plt
+    rows = metrics["per_class"]
+    positions = np.arange(len(rows))
+    width = 0.25
+    figure, axis = plt.subplots(figsize=(12, 5))
+    for offset, key, label in [(-width, "precision", "Precision"), (0, "recall", "Recall"), (width, "f1", "F1")]:
+        axis.bar(positions + offset, [row[key] for row in rows], width, label=label)
+    axis.set(ylim=(0, 1), ylabel="Score", title="Selected-checkpoint validation metrics by class")
+    axis.set_xticks(positions, class_names, rotation=45, ha="right")
+    axis.legend()
+    figure.tight_layout()
+    figure.savefig(Path(output_folder) / "per_class_metrics.png", dpi=150)
+    plt.close(figure)
+
+
+def save_misclassified_samples(validation_loader, predictions, class_names, output_folder, max_items=16):
+    """Save the first validation mistakes in loader order without touching test data."""
+    import matplotlib.pyplot as plt
+    mean = torch.tensor((0.485, 0.456, 0.406)).view(3, 1, 1)
+    std = torch.tensor((0.229, 0.224, 0.225)).view(3, 1, 1)
+    prediction_index = 0
+    mistakes = []
+    for images, labels in validation_loader:
+        for image, label in zip(images, labels.view(-1)):
+            predicted = int(predictions[prediction_index])
+            prediction_index += 1
+            if predicted != int(label) and len(mistakes) < max_items:
+                mistakes.append((image.cpu(), int(label), predicted))
+        if len(mistakes) >= max_items:
+            break
+    if prediction_index > len(predictions):
+        raise ValueError("Prediction count is shorter than validation data.")
+    if not mistakes:
+        return None
+    columns = 4
+    rows = int(np.ceil(len(mistakes) / columns))
+    figure, axes = plt.subplots(rows, columns, figsize=(12, 3 * rows), squeeze=False)
+    for axis in axes.flat:
+        axis.axis("off")
+    for axis, (image, truth, predicted) in zip(axes.flat, mistakes):
+        display = (image * std + mean).clamp(0, 1).permute(1, 2, 0).numpy()
+        axis.imshow(display)
+        axis.set_title(f"true: {class_names[truth]}\npred: {class_names[predicted]}", fontsize=8)
+        axis.axis("off")
+    figure.suptitle("Misclassified validation samples")
+    figure.tight_layout()
+    destination = Path(output_folder) / "misclassified_samples.png"
+    figure.savefig(destination, dpi=150)
+    plt.close(figure)
+    return destination
+
+
+def save_validation_diagnostics(labels, predictions, metrics, validation_loader, class_names, output_folder):
+    """Write all validation-only diagnostic figures for the selected result."""
+    save_confusion_matrices(labels, predictions, class_names, output_folder)
+    save_per_class_chart(metrics, class_names, output_folder)
+    save_misclassified_samples(validation_loader, predictions, class_names, output_folder)
+
+
+def create_artifact_zip(output_folder):
+    """Create a ZIP next to a completed evidence directory and return its path."""
+    folder = Path(output_folder)
+    archive = shutil.make_archive(str(folder), "zip", root_dir=folder.parent, base_dir=folder.name)
+    return Path(archive)
+
 def main():
+    """CLI-compatible full run; the notebook exposes the same calls stage by stage."""
     mode = CONFIG["mode"]
     if mode not in {"majority", "linear_probe", "finetune"}:
         raise ValueError("CONFIG['mode'] must be majority, linear_probe, or finetune.")
@@ -165,15 +289,24 @@ def main():
         for _, labels in train_loader:
             train_labels.extend(labels.view(-1).tolist())
         probabilities, majority_class = majority_probabilities(train_labels, len(validation_loader.dataset), CONFIG["num_classes"])
-        result = validate_majority(probabilities, validation_loader)
-        metrics = validation_metrics(result["labels"], result["predictions"], probabilities.numpy())
-        summary = {"mode": mode, "majority_class": majority_class, "best_epoch": None, "best_validation_macro_f1": metrics["macro_f1"], "runtime_seconds": time.time() - started, "test_evaluated": False}
+        selected_result = validate_majority(probabilities, validation_loader)
+        selected_result["probabilities"] = probabilities.numpy()
+        best_epoch = None
+        extra_summary = {"majority_class": majority_class}
     else:
-        best_epoch, best_f1, metrics, _ = train_neural_mode(mode, train_loader, validation_loader, torch.device("cuda"), output_folder)
-        summary = {"mode": mode, "best_epoch": best_epoch, "best_validation_macro_f1": best_f1, "runtime_seconds": time.time() - started, "test_evaluated": False}
+        train_neural_mode(mode, train_loader, validation_loader, torch.device("cuda"), output_folder)
+        _, best_epoch, selected_result = evaluate_best_checkpoint(mode, validation_loader, torch.device("cuda"), output_folder)
+        extra_summary = {}
+
+    metrics = validation_metrics(selected_result["labels"], selected_result["predictions"], selected_result.get("probabilities"))
+    summary = {"mode": mode, "best_epoch": best_epoch, "best_validation_macro_f1": metrics["macro_f1"], "runtime_seconds": time.time() - started, "test_evaluated": False, **extra_summary}
     save_json(output_folder / "metrics.json", metrics)
     save_json(output_folder / "summary.json", summary)
+    class_names = class_names_from_audit(CONFIG["audit_manifest_path"])
+    save_validation_diagnostics(selected_result["labels"], selected_result["predictions"], metrics, validation_loader, class_names, output_folder)
+    archive = create_artifact_zip(output_folder)
     print("Saved validation-only evidence to", output_folder)
+    print("Saved artifact archive to", archive)
     print(summary)
 
 
