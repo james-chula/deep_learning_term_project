@@ -29,7 +29,8 @@
 | Branch | `main` tracking `origin/main` |
 | Pre-integration commit | `4a79828768794d86531c8df1b5743c42ec563a09` — corrected report reproducibility state |
 | Working tree before this commit | Baseline package, fixed manifest/audit artifacts, thin baseline launcher, and training integration specification under Lead review/integration |
-| Baseline execution commit | 5db586c7b37b3585051c88379502ab6c9f2e546c is designated only for validation-only baseline runs after the notebook pin is updated to it. No result evidence exists. |
+| Stabilized provider/API commit | 8a637d34017bce6311225b82fd5d3a6563d7dd26 — canonical provider interface added after static review; no data load or experiment occurred. |
+| Baseline notebook pin | The thin baseline notebook is being updated in the next stabilization commit; do not run it until the Project Lead announces that exact pushed SHA. |
 
 ## Decisions and rationale
 
