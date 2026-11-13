@@ -161,6 +161,15 @@ def class_names_from_audit(audit_manifest_path):
     return [mapping[str(index)] for index in expected]
 
 
+def display_class_name(class_id, class_names):
+    """Return a concise plot label while preserving canonical class names elsewhere."""
+    aliases = {
+        3: "immature granulocytes",
+    }
+    class_id = int(class_id)
+    return aliases.get(class_id, class_names[class_id])
+
+
 def evaluate_best_checkpoint(mode, validation_loader, device, output_folder):
     """Reload and evaluate the macro-F1-selected neural checkpoint on validation."""
     if mode not in {"linear_probe", "finetune"}:

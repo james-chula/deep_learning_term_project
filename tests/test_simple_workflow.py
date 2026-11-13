@@ -140,6 +140,13 @@ class ProviderAuditValidationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "class mapping is invalid"):
             self.validate(mapping)
 
+    def test_display_class_name_aliases_only_long_plot_label(self):
+        source = (ROOT / "run_experiment.py").read_text(encoding="utf-8")
+        self.assertIn("def display_class_name(class_id, class_names):", source)
+        self.assertIn("3: \"immature granulocytes\"", source)
+        notebook = (ROOT / "notebooks/colab_run.ipynb").read_text(encoding="utf-8")
+        self.assertIn("display_class_name(label, class_names)", notebook)
+
 
 if __name__ == "__main__":
     unittest.main()
