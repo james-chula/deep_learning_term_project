@@ -153,3 +153,12 @@ Before any experiment authorization: (1) re-verify `main == origin/main` and a c
 **Evidence:** static Python compilation for all five simple files passed. No data download, model download, GPU runtime, metrics, checkpoint, or experiment was created.
 
 **Next action:** finish static review of simplified launcher/documentation, commit/push them, then await explicit Colab execution authorization. Last updated: 13 November 2026, 11:34 Asia/Bangkok.
+
+## Simplification integration complete — 13 November 2026, 11:34 Asia/Bangkok
+
+- Procedural training implementation commit: `9dc2b4b7d8f34e35bdd80d1afd44077e0becb6a0`.
+- Documentation, pinned Colab dependencies, provenance capture, and static checks commit: `c1ed80ade605c1613dd2ce1453be67bb8b2644ef`.
+- Thin launcher commit: `e1d5fbc59620f6687de7b5440c776db381d64dc0`; it checks out the reviewed code-and-documentation commit `c1ed80ade605c1613dd2ce1453be67bb8b2644ef` and invokes `run_experiment.py`.
+- `main` and `origin/main` were pushed and verified at `e1d5fbc59620f6687de7b5440c776db381d64dc0` before this state-record update.
+- Static verification: Python compilation passed; `python3 -m unittest discover -s tests -v` passed 4 tests; notebook JSON/pin checks passed; no experiment was run.
+- Open execution blocker: explicit user authorization for a Google Colab NVIDIA T4 run. Do not run locally. Last updated: 13 November 2026, 11:34 Asia/Bangkok.
