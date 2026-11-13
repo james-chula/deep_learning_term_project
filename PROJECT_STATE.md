@@ -1,6 +1,6 @@
 # Project state
 
-**Last updated:** 13 November 2026, 14:40 Asia/Bangkok
+**Last updated:** 13 November 2026, 14:45 Asia/Bangkok
 **Project:** BloodMNIST Deep Learning Term Project
 **Execution status:** A first Colab launch reached provider audit validation and stopped before dataset construction or training because class-3 label whitespace differed between the audit artifact and MedMNIST 3.0.2. No experiment completed; no validation metrics, checkpoints, curves, or run evidence exist.
 
@@ -70,3 +70,7 @@ Removed as obsolete after active replacement: old separate baseline runner, metr
 The first Colab launch at source cbfc3d741cb00eb9eccd568a09aa60e789f37646 stopped before dataset construction because the audit artifact has a space before the class-3 parenthesis while MedMNIST 3.0.2 does not. Validation now canonicalizes only repeated whitespace and whitespace immediately before an opening parenthesis while retaining exact class-ID and semantic-label checks. Focused tests cover cosmetic whitespace, meaningful changes, swapped assignments, missing IDs, and non-string labels. Static suite: 10 tests passed. No dataset was loaded and no experiment ran during this correction. The corrected source commit is ba769bfb4aad80ad7ab0c0e54451b2516e99ab81; the launcher is pinned to it.
 
 - Corrected source commit: ba769bfb4aad80ad7ab0c0e54451b2516e99ab81. The Colab launcher is pinned to this correction.
+
+## 13 November 2026, 14:45 Asia/Bangkok — MedMNIST root creation correction
+
+A Colab launch exposed that MedMNIST 3.0.2 requires its configured root directory to exist before dataset initialization. The provider now creates MEDMNIST_DATA_ROOT (default .data/medmnist) with parent directories before constructing train or validation datasets. A regression check enforces this ordering. No dataset or experiment was run for this correction. Expected commit reference: pending Lead commit/push.

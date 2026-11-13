@@ -34,6 +34,12 @@ class SimpleWorkflowStaticTests(unittest.TestCase):
         self.assertIn("Fixed 1% mode requires", source)
         self.assertIn("Fixed subset manifest not found", self.read("src/bloodmnist_baselines/data.py"))
 
+    def test_provider_creates_data_root_before_dataset_setup(self):
+        source = self.read("src/bloodmnist_baselines/data.py")
+        mkdir = source.index("root.mkdir(parents=True, exist_ok=True)")
+        train = source.index("BloodMNIST(split=\"train\"")
+        self.assertLess(mkdir, train)
+
     def test_neural_selection_is_validation_macro_f1(self):
         source = self.read("run_experiment.py")
         self.assertIn('if validation_result["macro_f1"] > best_f1:', source)

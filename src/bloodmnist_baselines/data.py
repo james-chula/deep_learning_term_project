@@ -115,6 +115,7 @@ def build_provider_datasets(*, audit_manifest_path, image_size, train_transform,
         raise ValueError("BloodMNIST workflow requires image_size=224.")
     audit, audit_sha = _audit(audit_manifest_path)
     root = Path(os.environ.get("MEDMNIST_DATA_ROOT", ".data/medmnist"))
+    root.mkdir(parents=True, exist_ok=True)
     # The provider must never construct the locked split.
     train: Dataset = BloodMNIST(split="train", root=str(root), size=28, download=True, transform=train_transform)
     val: Dataset = BloodMNIST(split="val", root=str(root), size=28, download=True, transform=val_transform)
