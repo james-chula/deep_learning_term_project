@@ -1,0 +1,23 @@
+run:
+  name: bloodmnist_resnet18_finetune_1pct
+data:
+  audit_manifest_path: artifacts/data_audit/audit_manifest.json
+  subset_manifest_path: splits/bloodmnist_train_1pct_seed2026.npz
+  archive_size: 28
+  resize_to: 224
+  test_policy: locked_not_loaded
+model:
+  name: resnet18
+  pretrained: true
+training:
+  seed: 2026
+  epochs: 20
+  batch_size: 32
+  num_workers: 2
+  lr: 0.0001
+  weight_decay: 0.0001
+  selection_metric: val_macro_f1
+  resume: null
+artifacts:
+  root: artifacts/training_runs
+  ledger_path: artifacts/training_runs/ledger.jsonl

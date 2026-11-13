@@ -2,13 +2,13 @@
 
 **Project:** Blood Cell Classification with ResNet-18
 **Course:** 2102666 Fundamentals of Deep Learning and Applications
-**Last updated:** 13 November 2026, 10:46 Asia/Bangkok
+**Last updated:** 13 November 2026, 11:02 Asia/Bangkok
 **Git authority:** Project Lead exclusively manages repository access, status, branches, pulls, commits, pushes, and Colab commit pinning. Teammates must not perform Git operations unless explicitly delegated a named action.
 
 ## Current status
 
 **Phase:** Progress-report implementation and evidence collection.
-**Overall:** Baseline implementation is committed at 5db586c7b37b3585051c88379502ab6c9f2e546c; no Colab experiment has run. The repository is being stabilized before further integration: a canonical train/validation provider API is under Lead review, and no fine-tuning code is integrated or executable.
+**Overall:** Baseline implementation is committed at `5db586c7b37b3585051c88379502ab6c9f2e546c`; no Colab experiment has run. The repository has a fixed canonical train/validation provider API at `8a637d34017bce6311225b82fd5d3a6563d7dd26`. Fine-tuning code remains staged only and is not executable from an authorized SHA.
 
 ## Timeline
 
@@ -27,10 +27,10 @@
 | Local repository | `/home/rakazo/deep_learning_term_project` |
 | Remote | `git@github.com:james-chula/deep_learning_term_project.git` |
 | Branch | `main` tracking `origin/main` |
-| Pre-integration commit | `4a79828768794d86531c8df1b5743c42ec563a09` — corrected report reproducibility state |
-| Working tree before this commit | Baseline package, fixed manifest/audit artifacts, thin baseline launcher, and training integration specification under Lead review/integration |
-| Stabilized provider/API commit | 8a637d34017bce6311225b82fd5d3a6563d7dd26 — canonical provider interface added after static review; no data load or experiment occurred. |
-| Baseline launcher commit | 74ca0681aa21fdedcbd2a85f9793f71c2ad4174f — thin launcher committed and pushed; it checks out approved baseline code SHA 8a637d34017bce6311225b82fd5d3a6563d7dd26. No result evidence exists. |
+| Verified current `main` and `origin/main` | `86ec8694f578e0e99e291f4a786f0e8d3c105c6c` |
+| Baseline implementation | `5db586c7b37b3585051c88379502ab6c9f2e546c` |
+| Stabilized provider/API commit | `8a637d34017bce6311225b82fd5d3a6563d7dd26` — canonical provider interface added after static review; no data load or experiment occurred. |
+| Baseline launcher commit | `74ca0681aa21fdedcbd2a85f9793f71c2ad4174f` — thin launcher checks out approved baseline code SHA `8a637d34017bce6311225b82fd5d3a6563d7dd26`; no result evidence exists. |
 
 ## Decisions and rationale
 
@@ -38,11 +38,12 @@
 | --- | --- | --- |
 | Dataset: BloodMNIST, official provider splits | Approved proposal; comparable, fixed public splits. | Confirmed |
 | Data sizes: 1% and 100% training | Required by proposal feedback; makes limited-data comparison meaningful. | Confirmed |
-| 1% subset: fixed, class-stratified, seed 2026 | Ensures fair, reproducible comparisons across model seeds and strategies. | Manifest staged for this commit: 120 indices, SHA-256 `11d34a47d4a048a954b3ade270e5abda003f181237b24d34e07fe974ef9c035d`. |
+| 1% subset: fixed, class-stratified, seed 2026 | Ensures fair, reproducible comparisons across model seeds and strategies. | 120 indices; SHA-256 `11d34a47d4a048a954b3ade270e5abda003f181237b24d34e07fe974ef9c035d`. |
 | Required strategies | Majority baseline; frozen ResNet-18 linear probe; full ResNet-18 fine-tuning; ResNet-18 from random weights. | Confirmed |
 | Model selection | Validation macro-F1 only; final test evaluation only after decisions freeze. | Confirmed |
 | Compute environment | Google Colab T4 only; no team-computer experiment execution. | Confirmed |
-| Code/notebook design | Modular `.py` files and one thin GitHub-imported Colab launcher limited to setup, repository update, config selection, and entry-point invocation. | Confirmed; not yet implemented. |
+| Code/notebook design | Modular `.py` files and one thin GitHub-imported Colab launcher limited to setup, repository update, config selection, and entry-point invocation. | Confirmed |
+| Canonical provider API | `bloodmnist_baselines.build_provider_datasets(*, audit_manifest_path, image_size, train_transform, val_transform, subset_manifest_path=None) -> ProviderDatasets(train, val, metadata)` | Fixed. Do not add another loader or change to `build_train_val`. |
 
 ## Evidence and artifacts
 
@@ -52,12 +53,12 @@
 | Proposal feedback | `Proposal_Feedback.md` | Committed |
 | Course instructions | `term_project_instructions_and_schedule.md` | Committed |
 | Progress checklist | `progress_tracker.md` | Committed; not yet updated for completed evidence |
-| Data audit notebook | `notebooks/01_data_audit_and_subset.ipynb` | Committed at `83e002a`; currently exceeds the new thin-notebook standard and must be refactored/replaced by a thin launcher plus modular code. |
+| Data audit notebook | `notebooks/01_data_audit_and_subset.ipynb` | Committed; audit evidence only, not the execution launcher. |
 | Data audit documentation | `notebooks/01_data_audit_and_subset.md` | Committed |
-| Report-ready audit artifacts | `artifacts/data_audit/audit_manifest.json`, `train_class_counts.csv` | Staged for this commit; source is official 28px archive resized deterministically to 224px. |
-| Fixed 1% subset indices | `splits/bloodmnist_train_1pct_seed2026.npz` | Staged for this commit; 120 entries, seed 2026. |
-| Mandatory baseline code/config | `src/bloodmnist_baselines/`, `configs/baseline_validation.yaml` | Staged for this commit; no results yet. |
-| Baseline Colab launcher | `notebooks/colab_run_baselines.ipynb` | Staged for this commit; thin launcher, validation-only, T4-enforced. |
+| Report-ready audit artifacts | `artifacts/data_audit/audit_manifest.json`, `train_class_counts.csv` | Committed; source is official 28px archive resized deterministically to 224px. |
+| Fixed 1% subset indices | `splits/bloodmnist_train_1pct_seed2026.npz` | Committed; 120 entries, seed 2026. |
+| Mandatory baseline code/config | `src/bloodmnist_baselines/`, `configs/baseline_validation.yaml` | Committed; no results yet. |
+| Baseline Colab launcher | `notebooks/colab_run_baselines.ipynb` | Committed thin launcher; no execution evidence. |
 | Controlled experiment protocol | `docs/experiments/controlled_experiment_protocol.md` | Reviewed and approved; pending Lead commit |
 | Experiment analysis state | `docs/state/experiment_analysis_status.md` | Reviewed and approved; pending Lead commit |
 
@@ -66,26 +67,26 @@
 - Official BloodMNIST splits: train **11,959**, validation **1,712**, test **3,421**.
 - Eight classes; RGB source inputs.
 - Test labels must remain unused until final decisions are frozen.
+- Execution source is official 28px BloodMNIST; resizing to 224px is deterministic. The 224px archive checksum is reference-only.
 
 ## Work ownership, handoffs, and dependencies
 
 | Owner | Assignment | Current dependency / handoff |
 | --- | --- | --- |
 | Project Lead | Git workflow, integration, state, timeline, commit pinning | Repository verified; teammate work must be delivered without teammate Git actions. |
-| Data & Baseline Engineer | Dataset audit, fixed splits, majority and frozen-linear-probe baselines | Generate audit evidence and fixed subset; stage/supply artifacts for lead integration. |
-| Training Engineer | Shared pipeline and Colab T4 fine-tuning | Needs committed modular data/split interfaces and lead-issued commit reference. |
-| Report & Reproducibility Lead | Progress report, evidence package, reproducibility docs | Needs counts, baseline/deep-model results, runtime and committed workflow. |
-| Experiment Coordinator & Analyst | Controlled matrix, seed aggregation, augmentation ablation, validation decisions | Protocol approved for the pending documentation commit; awaits shared pipeline/configs and fixed-split interface. |
+| Data & Baseline Engineer | Dataset audit, fixed splits, majority and frozen-linear-probe baselines | Provider contract is fixed; await explicit review request. |
+| Training Engineer | Shared pipeline and Colab T4 fine-tuning | Must correct provider-module nomination in staged source, then submit for Lead re-review. |
+| Report & Reproducibility Lead | Progress report, evidence package, reproducibility docs | State reconciled; awaits execution evidence. |
+| Experiment Coordinator & Analyst | Controlled matrix, seed aggregation, augmentation ablation, validation decisions | Awaits shared pipeline/configs and fixed-split interface. |
 
 ## Blockers and next actions
 
 | Priority | Blocker | Owner | Next action |
 | --- | --- | --- | --- |
-| Critical | Progress-report evidence is not yet generated: counts artifact, fixed subset, majority baseline, linear probe, first deep result, curves, runtime estimate. | Data/Training/Report leads coordinated by Project Lead | Generate only via Colab T4, deliver artifacts for lead review and commit. |
-| High | Legacy data-audit notebook is workflow-heavy and not the execution launcher. | Project Lead | Preserve it as audit evidence; use only the staged thin baseline launcher for execution. |
-| High | Fine-tuning/shared training implementation is not yet committed. | Training Engineer / Project Lead | Align it to the baseline manifest and stage modular source/config/launcher for lead integration. |
-| High | Controlled protocol needs exact data-split and pipeline interface alignment before execution. | Data & Baseline Engineer / Training Engineer / Experiment Coordinator | Provide split paths/checksum contract and CLI/config/result schema; Lead reviews any protocol-impacting change. |
-| High | No dated run plan is yet recorded for the 16 November 2026, 13:00 deadline. | Project Lead / Report Lead | Create evidence/run schedule immediately after implementation handoff. |
+| Critical | Progress-report experiment evidence is not generated: baseline metrics, first deep result, curves, and runtime estimate. | Project Lead / team | Generate only after static gates, in Colab T4, then commit artifacts. |
+| High | Fine-tuning pipeline is staged only. Its CLI and notebook pass the nonexistent provider module `bloodmnist_baselines.provider`. | Training Engineer | Change module argument to `bloodmnist_baselines`; no wrapper module, Git, or experiment. |
+| High | Fine-tuning implementation needs full Lead static review and integration. | Project Lead | Review corrected staged source, integrate, commit/push, and pin notebook to resulting SHA. |
+| High | No dated run plan is recorded for the 16 November 2026, 13:00 deadline. | Project Lead / Report Lead | Create evidence/run schedule after training handoff. |
 
 ## Operating procedure
 
@@ -97,10 +98,8 @@
 
 ## Lead review update — 13 November 2026, 10:38 Asia/Bangkok
 
-- Verified repository HEAD: 5db586c7b37b3585051c88379502ab6c9f2e546c; baseline paths and fixed-manifest contract are tracked. This remains the only authorized baseline-only Colab T4 commit.
-- Reviewed the complete staged training bundle, not only its spec. It is not executable: the committed baseline package lacks the required build_provider_datasets / ProviderDatasets API, and run_training deliberately writes a blocked_adapter ledger record then raises NotImplementedError. It also lacks the training/validation engine, metrics, transforms, and reporting integration.
-- The staged training launcher is a .py file, not the required thin GitHub-imported Colab notebook. No training commit and no training Colab run are authorized.
-- Requests issued: Data & Baseline Engineer to stage the canonical provider adapter; Training Engineer to stage the complete compatible validation-only implementation and .ipynb launcher.
+- The original staged training bundle was not executable: it required a missing provider interface and deliberately raised `NotImplementedError`. It also lacked the completed training/validation engine, metrics, transforms, and reporting integration.
+- The original launcher was a `.py` file, not a compliant thin GitHub-imported Colab notebook. No training commit or Colab run was authorized.
 
 ## Stabilization checkpoint — 13 November 2026, 10:46 Asia/Bangkok
 
@@ -108,14 +107,22 @@
 
 | Item | Verified state | Decision / next action |
 | --- | --- | --- |
-| Remote synchronization | `main` and `origin/main` both resolved to `0d9d3796051577f7d1b7cd724f762f07ad533705` before this checkpoint. | Lead only may commit/push stabilization changes. |
-| Baseline package | Present in commit `5db586c7b37b3585051c88379502ab6c9f2e546c`; module compilation passes. | Retain as the sole baseline implementation. No baseline experiment has been run. |
+| Remote synchronization | `main` and `origin/main` are now verified at `86ec8694f578e0e99e291f4a786f0e8d3c105c6c`. | Lead only may commit/push. |
+| Baseline package | Present from baseline implementation commit; canonical provider interface is integrated. | Retain as the sole baseline/data implementation. No baseline experiment has run. |
 | Fixed subset | Tracked manifest SHA-256 verified as `11d34a47d4a048a954b3ade270e5abda003f181237b24d34e07fe974ef9c035d`. | Immutable authoritative 1% membership definition. |
-| Canonical data source | Audit manifest identifies official 28px archive MD5 `7053d0359d879ad8a5505303e11de1dc`; training/resnet code must resize deterministically to 224px. | 224px archive checksum is reference-only; do not introduce another loader or split. |
-| Canonical provider interface | `bloodmnist_baselines.build_provider_datasets(*, audit_manifest_path, image_size, train_transform, val_transform, subset_manifest_path=None) -> ProviderDatasets(train, val, metadata)`. It returns no test dataset and records `test_policy=locked_not_loaded`. | This is the only approved provider API. Training must adapt to it; do not change the baseline interface to `build_train_val`. |
-| Training pipeline | The new bundle is staged only and not yet reviewed/integrated. Its provider specification conflicts with the canonical API. | No fine-tuning/scratch Colab SHA exists and no training may run. |
-| Colab execution | No Colab URL, GPU evidence, result JSON, or metrics exist. | Baseline execution is eligible only through launcher 74ca0681aa21fdedcbd2a85f9793f71c2ad4174f, which checks out code SHA 8a637d34017bce6311225b82fd5d3a6563d7dd26; no execution is currently underway. |
+| Canonical data source | Audit manifest identifies official 28px archive MD5 `7053d0359d879ad8a5505303e11de1dc`; ResNet code must resize deterministically to 224px. | Do not introduce another loader or split. |
+| Canonical provider interface | `bloodmnist_baselines.build_provider_datasets(...) -> ProviderDatasets`. It returns no test dataset and records `test_policy=locked_not_loaded`. | Sole approved provider API. |
+| Colab execution | No Colab URL, GPU evidence, result JSON, or metrics exist. | Baseline execution is eligible only through the pinned baseline launcher; no execution is underway. |
+
+## Provider-path review — 13 November 2026, 10:56 Asia/Bangkok
+
+**Finding:** the staged Training CLI/notebook provider path is invalid.
+
+- Integrated `src/bloodmnist_baselines/` contains `__init__.py`, `data.py`, `baselines.py`, `metrics.py`, and `runner.py`; it contains **no** `provider.py`.
+- `bloodmnist_baselines.__init__` exports `build_provider_datasets` directly.
+- The staged training adapter correctly resolves a named module's `build_provider_datasets` attribute, but its CLI/notebook nominate `bloodmnist_baselines.provider`, which will fail with `ModuleNotFoundError`.
+- Required correction: use `--provider-module bloodmnist_baselines`. Do not add a duplicate wrapper module merely to mask this mismatch.
 
 ### Stable-base gate
 
-Before any experiment authorization: (1) commit and push this provider/API stabilization; (2) re-verify `main == origin/main` and a clean tree; (3) require every thin notebook to contain the exact approved full SHA; (4) complete a static review of any training integration against this API; (5) update this file with the new commit. Test data remain locked.
+Before any experiment authorization: (1) re-verify `main == origin/main` and a clean tree; (2) require every thin notebook to contain the exact approved full SHA; (3) complete a static review of any training integration against the fixed provider API; (4) commit and push the reviewed training integration; (5) update this file with the new expected/current commit. Test data remain locked.
