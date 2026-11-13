@@ -41,7 +41,8 @@ class SimpleWorkflowStaticTests(unittest.TestCase):
     def test_notebook_is_thin(self):
         notebook = json.loads((ROOT / "notebooks/colab_run.ipynb").read_text(encoding="utf-8"))
         text = "\n".join("".join(cell.get("source", [])) for cell in notebook["cells"])
-        self.assertIn("ed0f97568df549986ddf2aecf11dee3548135ca4", text)
+        self.assertIn("assert len(COMMIT) == 40", text)
+        self.assertNotIn("ed0f97568df549986ddf2aecf11dee3548135ca4", text)
         self.assertIn("python run_experiment.py", text)
         self.assertNotIn("DataLoader(", text)
         self.assertNotIn("resnet18(", text)

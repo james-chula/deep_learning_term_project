@@ -10,6 +10,7 @@ import csv
 import json
 import random
 import subprocess
+import os
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -73,6 +74,13 @@ def save_json(path, payload):
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
+def save_checkpoint(path, payload):
+    """Atomically replace a neural evidence checkpoint after an epoch completes."""
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    torch.save(payload, temporary)
+    os.replace(temporary, path)
+
+
 def save_history(history, output_folder):
     if not history:
         return
@@ -122,21 +130,21 @@ def train_neural_mode(mode, train_loader, validation_loader, device, output_fold
     loss_function = torch.nn.CrossEntropyLoss()
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=CONFIG["epochs"])
     best_f1, best_epoch, history = -1.0, None, []
-    last_metrics = None
+    best_metrics = None
     for epoch in range(1, CONFIG["epochs"] + 1):
         train_result = train_one_epoch(model, train_loader, optimizer, loss_function, device)
         validation_result = validate(model, validation_loader, loss_function, device)
         row = {"epoch": epoch, "train_loss": train_result["loss"], "train_accuracy": train_result["accuracy"], "validation_loss": validation_result["loss"], "validation_accuracy": validation_result["accuracy"], "validation_macro_f1": validation_result["macro_f1"], "learning_rate": optimizer.param_groups[0]["lr"]}
         history.append(row)
-        last_metrics = validation_result
-        torch.save({"epoch": epoch, "model_state_dict": model.state_dict()}, output_folder / "last_model.pt")
+        save_checkpoint(output_folder / "last_model.pt", {"epoch": epoch, "model_state_dict": model.state_dict()})
         if validation_result["macro_f1"] > best_f1:
             best_f1, best_epoch = validation_result["macro_f1"], epoch
-            torch.save({"epoch": epoch, "model_state_dict": model.state_dict()}, output_folder / "best_model.pt")
+            best_metrics = validation_result
+            save_checkpoint(output_folder / "best_model.pt", {"epoch": epoch, "model_state_dict": model.state_dict()})
         scheduler.step()
     save_history(history, output_folder)
     save_plot(history, output_folder)
-    return best_epoch, best_f1, validation_metrics(last_metrics["labels"], last_metrics["predictions"]), history
+    return best_epoch, best_f1, validation_metrics(best_metrics["labels"], best_metrics["predictions"], best_metrics["probabilities"]), history
 
 
 def main():

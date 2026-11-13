@@ -31,7 +31,7 @@ def validate(model, loader, loss_function, device):
     total_loss = 0.0
     correct = 0
     examples = 0
-    true_labels, predicted_labels = [], []
+    true_labels, predicted_labels, probabilities = [], [], []
     for images, labels in loader:
         images = images.to(device, non_blocking=True)
         labels = labels.view(-1).long().to(device, non_blocking=True)
@@ -43,12 +43,14 @@ def validate(model, loader, loss_function, device):
         correct += (predictions == labels).sum().item()
         true_labels.extend(labels.cpu().tolist())
         predicted_labels.extend(predictions.cpu().tolist())
+        probabilities.extend(torch.softmax(scores, dim=1).cpu().tolist())
     return {
         "loss": total_loss / examples,
         "accuracy": correct / examples,
         "macro_f1": f1_score(true_labels, predicted_labels, average="macro", zero_division=0),
         "labels": true_labels,
         "predictions": predicted_labels,
+        "probabilities": probabilities,
     }
 
 
