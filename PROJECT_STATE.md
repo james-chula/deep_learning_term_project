@@ -2,13 +2,13 @@
 
 **Project:** Blood Cell Classification with ResNet-18
 **Course:** 2102666 Fundamentals of Deep Learning and Applications
-**Last updated:** 13 November 2026, 10:38 Asia/Bangkok
+**Last updated:** 13 November 2026, 10:46 Asia/Bangkok
 **Git authority:** Project Lead exclusively manages repository access, status, branches, pulls, commits, pushes, and Colab commit pinning. Teammates must not perform Git operations unless explicitly delegated a named action.
 
 ## Current status
 
 **Phase:** Progress-report implementation and evidence collection.
-**Overall:** Documentation and the baseline implementation package are committed at 5db586c7b37b3585051c88379502ab6c9f2e546c. No Colab experiment has run. The staged fine-tuning package was reviewed and rejected as non-executable; validation evidence and a complete pipeline remain outstanding.
+**Overall:** Baseline implementation is committed at 5db586c7b37b3585051c88379502ab6c9f2e546c; no Colab experiment has run. The repository is being stabilized before further integration: a canonical train/validation provider API is under Lead review, and no fine-tuning code is integrated or executable.
 
 ## Timeline
 
@@ -29,7 +29,7 @@
 | Branch | `main` tracking `origin/main` |
 | Pre-integration commit | `4a79828768794d86531c8df1b5743c42ec563a09` — corrected report reproducibility state |
 | Working tree before this commit | Baseline package, fixed manifest/audit artifacts, thin baseline launcher, and training integration specification under Lead review/integration |
-| Intended Colab baseline | **No experiment commit is designated until this integration is pushed.** Then use only the full SHA announced by the Project Lead. |
+| Baseline execution commit | 5db586c7b37b3585051c88379502ab6c9f2e546c is designated only for validation-only baseline runs after the notebook pin is updated to it. No result evidence exists. |
 
 ## Decisions and rationale
 
@@ -100,3 +100,21 @@
 - Reviewed the complete staged training bundle, not only its spec. It is not executable: the committed baseline package lacks the required build_provider_datasets / ProviderDatasets API, and run_training deliberately writes a blocked_adapter ledger record then raises NotImplementedError. It also lacks the training/validation engine, metrics, transforms, and reporting integration.
 - The staged training launcher is a .py file, not the required thin GitHub-imported Colab notebook. No training commit and no training Colab run are authorized.
 - Requests issued: Data & Baseline Engineer to stage the canonical provider adapter; Training Engineer to stage the complete compatible validation-only implementation and .ipynb launcher.
+
+## Stabilization checkpoint — 13 November 2026, 10:46 Asia/Bangkok
+
+**Purpose:** Establish one verified repository baseline before any further training integration or Colab execution.
+
+| Item | Verified state | Decision / next action |
+| --- | --- | --- |
+| Remote synchronization | `main` and `origin/main` both resolved to `0d9d3796051577f7d1b7cd724f762f07ad533705` before this checkpoint. | Lead only may commit/push stabilization changes. |
+| Baseline package | Present in commit `5db586c7b37b3585051c88379502ab6c9f2e546c`; module compilation passes. | Retain as the sole baseline implementation. No baseline experiment has been run. |
+| Fixed subset | Tracked manifest SHA-256 verified as `11d34a47d4a048a954b3ade270e5abda003f181237b24d34e07fe974ef9c035d`. | Immutable authoritative 1% membership definition. |
+| Canonical data source | Audit manifest identifies official 28px archive MD5 `7053d0359d879ad8a5505303e11de1dc`; training/resnet code must resize deterministically to 224px. | 224px archive checksum is reference-only; do not introduce another loader or split. |
+| Canonical provider interface | `bloodmnist_baselines.build_provider_datasets(*, audit_manifest_path, image_size, train_transform, val_transform, subset_manifest_path=None) -> ProviderDatasets(train, val, metadata)`. It returns no test dataset and records `test_policy=locked_not_loaded`. | This is the only approved provider API. Training must adapt to it; do not change the baseline interface to `build_train_val`. |
+| Training pipeline | The new bundle is staged only and not yet reviewed/integrated. Its provider specification conflicts with the canonical API. | No fine-tuning/scratch Colab SHA exists and no training may run. |
+| Colab execution | No Colab URL, GPU evidence, result JSON, or metrics exist. | All execution remains blocked pending a post-stabilization lead-approved commit and notebook pin verification. |
+
+### Stable-base gate
+
+Before any experiment authorization: (1) commit and push this provider/API stabilization; (2) re-verify `main == origin/main` and a clean tree; (3) require every thin notebook to contain the exact approved full SHA; (4) complete a static review of any training integration against this API; (5) update this file with the new commit. Test data remain locked.
