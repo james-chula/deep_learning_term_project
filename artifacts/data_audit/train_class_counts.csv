@@ -1,0 +1,9 @@
+class_index,class_name,count,prevalence
+0,basophil,852,0.07124341500125428
+1,eosinophil,2181,0.182373108119408
+2,erythroblast,1085,0.09072664938540012
+3,"immature granulocytes (myelocytes, metamyelocytes and promyelocytes)",2026,0.16941215820720795
+4,lymphocyte,849,0.07099255790617945
+5,monocyte,993,0.08303369846977172
+6,neutrophil,2330,0.1948323438414583
+7,platelet,1643,0.1373860690693202

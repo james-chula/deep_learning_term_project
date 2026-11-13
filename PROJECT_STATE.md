@@ -2,13 +2,13 @@
 
 **Project:** Blood Cell Classification with ResNet-18
 **Course:** 2102666 Fundamentals of Deep Learning and Applications
-**Last updated:** 13 November 2026, 10:26 Asia/Bangkok
+**Last updated:** 13 November 2026, 10:31 Asia/Bangkok
 **Git authority:** Project Lead exclusively manages repository access, status, branches, pulls, commits, pushes, and Colab commit pinning. Teammates must not perform Git operations unless explicitly delegated a named action.
 
 ## Current status
 
 **Phase:** Progress-report implementation and evidence collection.
-**Overall:** Data-audit workflow is committed. Controlled-comparison protocol and analyst state are approved for integration in the pending documentation commit; required generated audit evidence, fixed subset artifact, baselines, shared training pipeline, Colab launcher, and progress-report results remain outstanding.
+**Overall:** Documentation and the baseline implementation package are integrated locally pending this commit. No Colab experiment has run; validation evidence and the fine-tuning pipeline remain outstanding.
 
 ## Timeline
 
@@ -27,9 +27,9 @@
 | Local repository | `/home/rakazo/deep_learning_term_project` |
 | Remote | `git@github.com:james-chula/deep_learning_term_project.git` |
 | Branch | `main` tracking `origin/main` |
-| Current verified commit | `83e002a359e9ac9a15855683ec59c36c6874dc40` — `data audit` |
-| Working tree at verification | `PROJECT_STATE.md`, controlled-experiment protocol, and analyst state pending Lead commit |
-| Intended Colab baseline | **No experiment commit is designated.** Do not run Colab experiments from `83e002a`; wait for a Lead-announced implementation commit. |
+| Pre-integration commit | `4a79828768794d86531c8df1b5743c42ec563a09` — corrected report reproducibility state |
+| Working tree before this commit | Baseline package, fixed manifest/audit artifacts, thin baseline launcher, and training integration specification under Lead review/integration |
+| Intended Colab baseline | **No experiment commit is designated until this integration is pushed.** Then use only the full SHA announced by the Project Lead. |
 
 ## Decisions and rationale
 
@@ -37,7 +37,7 @@
 | --- | --- | --- |
 | Dataset: BloodMNIST, official provider splits | Approved proposal; comparable, fixed public splits. | Confirmed |
 | Data sizes: 1% and 100% training | Required by proposal feedback; makes limited-data comparison meaningful. | Confirmed |
-| 1% subset: fixed, class-stratified, seed 2026 | Ensures fair, reproducible comparisons across model seeds and strategies. | Confirmed in committed notebook/docs; artifact not yet generated/committed. |
+| 1% subset: fixed, class-stratified, seed 2026 | Ensures fair, reproducible comparisons across model seeds and strategies. | Manifest staged for this commit: 120 indices, SHA-256 `11d34a47d4a048a954b3ade270e5abda003f181237b24d34e07fe974ef9c035d`. |
 | Required strategies | Majority baseline; frozen ResNet-18 linear probe; full ResNet-18 fine-tuning; ResNet-18 from random weights. | Confirmed |
 | Model selection | Validation macro-F1 only; final test evaluation only after decisions freeze. | Confirmed |
 | Compute environment | Google Colab T4 only; no team-computer experiment execution. | Confirmed |
@@ -53,10 +53,10 @@
 | Progress checklist | `progress_tracker.md` | Committed; not yet updated for completed evidence |
 | Data audit notebook | `notebooks/01_data_audit_and_subset.ipynb` | Committed at `83e002a`; currently exceeds the new thin-notebook standard and must be refactored/replaced by a thin launcher plus modular code. |
 | Data audit documentation | `notebooks/01_data_audit_and_subset.md` | Committed |
-| Report-ready official split counts | `artifacts/data_audit/official_split_counts.md` | Not present/committed |
-| Fixed 1% subset indices | `splits/bloodmnist_train_1pct_seed2026.npz` | Not present/committed |
-| Training/evaluation code and configs | — | Not present/committed |
-| Colab launcher | — | Not present/committed |
+| Report-ready audit artifacts | `artifacts/data_audit/audit_manifest.json`, `train_class_counts.csv` | Staged for this commit; source is official 28px archive resized deterministically to 224px. |
+| Fixed 1% subset indices | `splits/bloodmnist_train_1pct_seed2026.npz` | Staged for this commit; 120 entries, seed 2026. |
+| Mandatory baseline code/config | `src/bloodmnist_baselines/`, `configs/baseline_validation.yaml` | Staged for this commit; no results yet. |
+| Baseline Colab launcher | `notebooks/colab_run_baselines.ipynb` | Staged for this commit; thin launcher, validation-only, T4-enforced. |
 | Controlled experiment protocol | `docs/experiments/controlled_experiment_protocol.md` | Reviewed and approved; pending Lead commit |
 | Experiment analysis state | `docs/state/experiment_analysis_status.md` | Reviewed and approved; pending Lead commit |
 
@@ -81,8 +81,8 @@
 | Priority | Blocker | Owner | Next action |
 | --- | --- | --- | --- |
 | Critical | Progress-report evidence is not yet generated: counts artifact, fixed subset, majority baseline, linear probe, first deep result, curves, runtime estimate. | Data/Training/Report leads coordinated by Project Lead | Generate only via Colab T4, deliver artifacts for lead review and commit. |
-| Critical | Current committed data-audit notebook is not compliant with the thin-notebook/modular-code constraint. | Project Lead with Data/Training | Refactor workflow into documented modules plus a thin GitHub-imported Colab launcher before experiment runs. |
-| High | No current committed training/evaluation modules, configs, result schema, or launcher. | Training Engineer / Project Lead | Supply modular implementation and configs; lead integrates and pins commit. |
+| High | Legacy data-audit notebook is workflow-heavy and not the execution launcher. | Project Lead | Preserve it as audit evidence; use only the staged thin baseline launcher for execution. |
+| High | Fine-tuning/shared training implementation is not yet committed. | Training Engineer / Project Lead | Align it to the baseline manifest and stage modular source/config/launcher for lead integration. |
 | High | Controlled protocol needs exact data-split and pipeline interface alignment before execution. | Data & Baseline Engineer / Training Engineer / Experiment Coordinator | Provide split paths/checksum contract and CLI/config/result schema; Lead reviews any protocol-impacting change. |
 | High | No dated run plan is yet recorded for the 16 November 2026, 13:00 deadline. | Project Lead / Report Lead | Create evidence/run schedule immediately after implementation handoff. |
 

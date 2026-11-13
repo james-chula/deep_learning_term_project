@@ -55,3 +55,10 @@
 - Training Engineer: once pipeline is integrated/committed and Colab pull/run is confirmed, provide validation-only run manifests, metrics, and artifact paths.
 - Project Lead: confirm implemented module, entry point, and config paths; review and commit documentation artifacts.
 - Next: integrate verified evidence into report tables/captions and README; prepare evidence-complete draft by 2026-11-15 18:00 Asia/Bangkok.
+
+### Data & Baseline staging update — 2026-11-13 10:30 Asia/Bangkok
+Peer-reported staged, not integrated/committed bundle: bots/cmwee5b6imfv26efu7xhcaupd/staged_data_baseline/. Proposed project paths: docs/data_and_baselines.md; docs/state/data_baseline_status.md; configs/baseline_validation.yaml; splits/bloodmnist_train_1pct_seed2026.npz; artifacts/data_audit/audit_manifest.json; artifacts/data_audit/train_class_counts.csv; src/bloodmnist_baselines/{data,metrics,baselines,runner}.py; and notebooks/colab_run_baselines.ipynb. Reportable only as planned/staged until Lead integration and commit are verified.
+
+Known subset specification: provider train split; 1% = 120 examples; seed 2026; class counts [9, 22, 11, 20, 9, 10, 23, 16]; subset-manifest SHA-256 11d34a47d4a048a954b3ade270e5abda003f181237b24d34e07fe974ef9c035d. Local 28px source archive SHA-256 observed by the engineer: 062023e186f537e26b3c21ea3b2614ddfc475e8a14825dfd20663bbb7e37bddc. The canonical baseline workflow uses the official 28px archive (official MD5 7053d0359d879ad8a5505303e11de1dc) with deterministic resize to 224px. The 224px archive MD5 b718ff6835fcbdb22ba9eacccd7b2601 is reference-only unless a later approved configuration changes the source archive.
+
+No completed Colab T4 majority-class or frozen-ResNet-18 linear-probe validation run exists as of 2026-11-13 10:30 Asia/Bangkok. Accordingly macro-F1, other validation metrics, runtime, Colab URL/T4 identity, and completed evidence paths remain unavailable. Proposed notebook/runner/result schema are planned only.

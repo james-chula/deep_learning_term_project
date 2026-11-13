@@ -1,0 +1,34 @@
+{
+  "dataset_flag": "bloodmnist",
+  "dataset_version": "MedMNIST v2",
+  "official_28px_archive_md5": "7053d0359d879ad8a5505303e11de1dc",
+  "source_local_sha256": "062023e186f537e26b3c21ea3b2614ddfc475e8a14825dfd20663bbb7e37bddc",
+  "provider_split_sizes": {
+    "train": 11959,
+    "val": 1712,
+    "test": 3421
+  },
+  "class_mapping": {
+    "0": "basophil",
+    "1": "eosinophil",
+    "2": "erythroblast",
+    "3": "immature granulocytes (myelocytes, metamyelocytes and promyelocytes)",
+    "4": "lymphocyte",
+    "5": "monocyte",
+    "6": "neutrophil",
+    "7": "platelet"
+  },
+  "subset_manifest": "splits/bloodmnist_train_1pct_seed2026.npz",
+  "subset_size": 120,
+  "subset_seed": 2026,
+  "subset_class_counts": {
+    "0": 9,
+    "1": 22,
+    "2": 11,
+    "3": 20,
+    "4": 9,
+    "5": 10,
+    "6": 23,
+    "7": 16
+  }
+}
