@@ -87,3 +87,7 @@ The Colab launcher now removes any stale /content/project directory before cloni
 ## 13 November 2026, 20:40 Asia/Bangkok — stage-by-stage progress-report notebook
 
 The Colab notebook now exposes runtime/provenance, configuration, data audit and samples, model/setup inspection, training, curves, explicit best-checkpoint reload and validation, confusion matrices, per-class metrics, misclassification examples, and evidence ZIP export as separate stages while reusing modular Python APIs. The CLI remains supported. Test loading remains absent. Adversarial review found no correctness blocker; 13/13 static unit tests passed and active Python compiled. Reviewed workflow source commit: 23f9f15f6020720b1320ba1c69dd8b0137eed814. The notebook is pinned to that source. Pin-publication commit: fe859e7. No experiment ran on the Team Computer.
+
+## 13 November 2026, 21:13 Asia/Bangkok — concise plot label alias
+
+Added `display_class_name()` to modular Python and updated the notebook sample visualization to use it. Class ID 3 is displayed as `immature granulocytes`; canonical audit/metric class names remain unchanged. Static suite: 14 tests passed; Python compilation and notebook JSON validation passed. No experiment ran on the Team Computer. Source commit: `6b71dff8ea41fb599cc33497de88c56700900881`; launcher pin commit: `f72c850d96c1f43197f548d41db3f4936b23306f`.
