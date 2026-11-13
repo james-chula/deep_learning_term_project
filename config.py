@@ -1,12 +1,14 @@
-"""Edit these values to define one BloodMNIST ResNet-18 experiment.
+"""Edit this one dictionary to select a validation-only BloodMNIST run.
 
-Do not put the test split here. It is intentionally not available to this program.
+Allowed modes: majority, linear_probe, finetune. Test data are intentionally not
+represented in this configuration or anywhere in the execution workflow.
 """
 
 CONFIG = {
-    "run_name": "bloodmnist_resnet18_1pct",
+    "mode": "finetune",  # majority | linear_probe | finetune
+    "run_name": "bloodmnist_finetune_1pct",
     "seed": 2026,
-    "epochs": 10,
+    "epochs": 10,  # used by linear_probe and finetune; ignored by majority
     "batch_size": 64,
     "learning_rate": 0.001,
     "weight_decay": 0.0001,

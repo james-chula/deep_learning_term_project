@@ -1,7 +1,7 @@
-"""Get the approved BloodMNIST train and validation loaders.
+"""Get approved BloodMNIST training and validation loaders.
 
-The provider package owns data download, audit checks, official split membership,
-and the fixed training subset. This file never constructs or loads a test split.
+The provider loads only official train and validation data. Test data are not
+constructed, exposed, or evaluated by this workflow.
 """
 from pathlib import Path
 
@@ -12,57 +12,30 @@ from bloodmnist_baselines import build_provider_datasets
 
 
 def make_transforms(image_size):
-    """Resize 28px images to 224px; use augmentation only while training."""
-    normalize = transforms.Normalize(
-        mean=(0.485, 0.456, 0.406),
-        std=(0.229, 0.224, 0.225),
+    """Resize official 28px images exactly once to 224px."""
+    if image_size != 224:
+        raise ValueError("The approved workflow resizes 28px BloodMNIST images to 224px.")
+    normalize = transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
+    return (
+        transforms.Compose([transforms.Resize((image_size, image_size)), transforms.RandomHorizontalFlip(), transforms.ToTensor(), normalize]),
+        transforms.Compose([transforms.Resize((image_size, image_size)), transforms.ToTensor(), normalize]),
     )
-    train_transform = transforms.Compose([
-        transforms.Resize((image_size, image_size)),
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        normalize,
-    ])
-    validation_transform = transforms.Compose([
-        transforms.Resize((image_size, image_size)),
-        transforms.ToTensor(),
-        normalize,
-    ])
-    return train_transform, validation_transform
 
 
 def get_data_loaders(config):
-    """Return train_loader, validation_loader, and provider metadata.
-
-    Raises an error if the approved provider does not prove the locked-test policy.
-    """
+    """Return only train loader, validation loader, and provider provenance."""
     train_transform, validation_transform = make_transforms(config["image_size"])
+    if config["use_fixed_1pct_subset"] and not config["subset_manifest_path"]:
+        raise ValueError("Fixed 1% mode requires its committed subset manifest; no full-data fallback exists.")
     subset_path = config["subset_manifest_path"] if config["use_fixed_1pct_subset"] else None
-    datasets = build_provider_datasets(
-        audit_manifest_path=Path(config["audit_manifest_path"]),
-        image_size=config["image_size"],
-        train_transform=train_transform,
-        val_transform=validation_transform,
-        subset_manifest_path=Path(subset_path) if subset_path else None,
-    )
-    metadata = datasets.metadata
+    datasets = build_provider_datasets(audit_manifest_path=Path(config["audit_manifest_path"]), image_size=config["image_size"], train_transform=train_transform, val_transform=validation_transform, subset_manifest_path=Path(subset_path) if subset_path else None)
+    metadata = datasets["metadata"]
     if metadata.get("test_policy") != "locked_not_loaded":
         raise ValueError("Provider must keep the test split locked and unloaded.")
     if metadata.get("archive_size") != 28 or metadata.get("resize_to") != 224:
-        raise ValueError("Expected official 28px data resized to 224px.")
-
-    train_loader = DataLoader(
-        datasets.train,
-        batch_size=config["batch_size"],
-        shuffle=True,
-        num_workers=config["num_workers"],
-        pin_memory=True,
+        raise ValueError("Expected official 28px data resized once to 224px.")
+    return (
+        DataLoader(datasets["train"], batch_size=config["batch_size"], shuffle=True, num_workers=config["num_workers"], pin_memory=True),
+        DataLoader(datasets["val"], batch_size=config["batch_size"], shuffle=False, num_workers=config["num_workers"], pin_memory=True),
+        metadata,
     )
-    validation_loader = DataLoader(
-        datasets.val,
-        batch_size=config["batch_size"],
-        shuffle=False,
-        num_workers=config["num_workers"],
-        pin_memory=True,
-    )
-    return train_loader, validation_loader, metadata

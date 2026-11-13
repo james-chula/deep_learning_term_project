@@ -1,22 +1,40 @@
-# Simple training workflow
+# Simplified validation-only workflow
 
-The first deep-learning experiment is intentionally written as five small Python files at the repository root. Read them in this order:
+## Approved design
 
-1. `config.py` — one plain `CONFIG` dictionary. Change epochs, batch size, learning rate, seed, or output folder here.
-2. `data.py` — gets approved BloodMNIST training and validation loaders from `bloodmnist_baselines`. It does not create or load a test split.
-3. `model.py` — creates pretrained ResNet-18 and changes its final layer to predict the 8 BloodMNIST classes.
-4. `train.py` — direct training and validation loops. `train_one_epoch` updates weights; `validate` only measures validation loss, accuracy, and macro-F1.
-5. `run_experiment.py` — the top-to-bottom program. It checks for a T4 GPU, gets data, builds the model, repeats train/validate for each epoch, then saves outputs.
+The project uses five procedural root modules and one locked provider module:
 
-Run only through `notebooks/colab_train_resnet18.ipynb` on a Google Colab NVIDIA T4 runtime. The notebook clones the repository, checks out its pinned commit, installs packages, and invokes the root training script with `PYTHONPATH=src`.
+1. `config.py`: plain `CONFIG` dictionary; selects `majority`, `linear_probe`, or `finetune`.
+2. `data.py`: creates train/validation transforms and loaders through the provider.
+3. `model.py`: majority predictions and pretrained eight-class ResNet-18 creation.
+4. `train.py`: direct training and validation routines.
+5. `run_experiment.py`: T4 check, seed, orchestration, validation-only selection, and evidence serialization.
+6. `src/bloodmnist_baselines/data.py`: validated official train/validation source with no test-loading API.
 
-Results are written under `outputs/<UTC timestamp>_bloodmnist_resnet18_1pct/`:
+The mandatory execution sequence is:
 
-- `run_metadata.json` — configuration, provider provenance, GPU, and Git commit;
-- `history.csv` — one row per epoch;
-- `learning_curves.png` — loss and validation macro-F1 curves;
-- `best_model.pt` — model selected only by validation macro-F1;
-- `last_model.pt` — final epoch model;
-- `summary.json` — best epoch, best validation macro-F1, and runtime.
+```text
+T4 check -> seed -> train/validation data -> selected mode -> validation -> save evidence
+```
 
-The locked test split is never loaded or evaluated. No local experiment execution is permitted; run the notebook in Colab only after explicit authorization.
+## Modes
+
+| Mode | Training rule | Checkpoint selection |
+|---|---|---|
+| `majority` | No neural model; use selected training labels only | Not applicable |
+| `linear_probe` | Freeze pretrained ResNet-18 backbone; update final layer only | Validation macro-F1 |
+| `finetune` | Update all pretrained ResNet-18 parameters | Validation macro-F1 |
+
+## Safety invariants
+
+- Provider constructs only official training and validation datasets.
+- Test data cannot be requested through the active API.
+- Source image size is checked as 28 and transformed once to 224.
+- A requested 1% run requires the versioned fixed-subset manifest and cannot fall back to full training data.
+- Validation does not call an optimizer or update weights.
+- Neural `best_model.pt` is saved only when validation macro-F1 improves.
+- All summaries record `test_evaluated: false`.
+
+## Thin Colab notebook
+
+`notebooks/colab_run.ipynb` may only: verify T4, clone the repository, check out its pin, install requirements, invoke `run_experiment.py`, and list saved evidence. It contains no workflow implementation.

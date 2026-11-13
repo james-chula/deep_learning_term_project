@@ -1,45 +1,56 @@
-# Blood Cell Classification with ResNet-18
+# BloodMNIST validation-only ResNet-18 project
 
-## Jupyter development environment
+## Current status
 
-This repository uses a Nix flake and direnv to provide a project-scoped Python/Jupyter runtime. The environment includes Python 3.12, PyTorch, torchvision, JupyterLab, and common analysis packages.
+No experiment result exists yet. The repository contains one simplified, validation-only workflow for three required modes:
 
-### One-time setup
+- `majority`: predicts the class most frequent in the selected official training data;
+- `linear_probe`: ImageNet-pretrained ResNet-18 with only its final layer trainable;
+- `finetune`: ImageNet-pretrained ResNet-18 with all parameters trainable.
 
-From the repository root:
+The test split is locked. The provider constructs only official `train` and `val` datasets; no launcher, configuration, or mode can request test data.
 
-```bash
-direnv allow
-./scripts/setup-runtime
+## Layout
+
+```text
+config.py            one plain configuration dictionary and mode selection
+data.py              one train/validation loader path and safety checks
+model.py             majority procedure and pretrained ResNet-18 modes
+train.py             direct train and validation loops
+run_experiment.py    T4 guard, orchestration, metrics, and evidence saving
+src/bloodmnist_baselines/data.py
+                      audited official train/validation provider
+notebooks/colab_run.ipynb
+                      thin Colab launcher only
 ```
 
-Afterward, entering the repository automatically loads the flake shell. Start JupyterLab with:
+## Required Colab T4 workflow
 
-```bash
-./scripts/jupyter
-```
+1. Open `notebooks/colab_run.ipynb` in Google Colab.
+2. Select an NVIDIA T4 runtime.
+3. The notebook clones this repository, checks out its pinned reviewed commit, installs `requirements-colab.txt`, and invokes `run_experiment.py`.
+4. Before running, set only `CONFIG["mode"]` in the pinned `config.py` to `majority`, `linear_probe`, or `finetune`; commit and pin that configuration change first.
+5. Download or inspect the created `outputs/<timestamp>_<run-name>_<mode>/` evidence directory.
 
-Open a notebook and select the **Python (BloodMNIST ResNet)** kernel. The repository-local `.jupyter/` directory (intentionally ignored by Git) stores its kernel, JupyterLab settings, extensions/data, and transient server runtime files. Your global Jupyter settings in `~/.jupyter/` are not used when Jupyter is started through `./scripts/jupyter`.
+The notebook contains no data-loading, model, training, or evaluation implementation.
 
-### Data audit and fixed 1% subset
+## Safety and data contract
 
-Generate the required official-split counts table and reproducible class-stratified 1% training subset with:
+- Official BloodMNIST images are 28×28 and are resized exactly once to 224×224 in `data.py` transforms.
+- The provider validates the audited archive identity, official split counts, and class mapping.
+- The optional 1% setting requires `splits/bloodmnist_train_1pct_seed2026.npz`; a missing or invalid manifest fails rather than silently using full training data.
+- The manifest is applied only to training; validation always uses the full official validation split.
+- `best_model.pt` for neural modes is selected only by validation macro-F1.
+- No final test evaluation can occur in this workflow because no test dataset is loaded.
 
-```bash
-./scripts/setup-runtime
-./scripts/jupyter
-```
+## Evidence per Colab run
 
-Then open [`notebooks/01_data_audit_and_subset.ipynb`](notebooks/01_data_audit_and_subset.ipynb) and select the **Python (BloodMNIST ResNet)** kernel. Run its cells in order; the download happens from the notebook.
+Every run writes `outputs/.../` with:
 
-The notebook installs no packages itself. `./scripts/setup-runtime` installs the local MedMNIST dependency if necessary. The notebook downloads the compact official BloodMNIST source file into the ignored `.data/` directory. Its split membership and labels are the same as the 224×224 release; training code will resize images to 224×224. Versioned audit outputs are written to `artifacts/data_audit/`; the selected indices, allocation seed (2026), and subset metadata are saved in `splits/bloodmnist_train_1pct_seed2026.npz`. The notebook does not inspect test labels and records only the test-set total.
+- `run_metadata.json`: commit, GPU, package versions, provider/data identity, seed, and test-lock status;
+- `config.json`: exact configuration copy;
+- `metrics.json`: validation metrics, including macro-F1 and per-class metrics;
+- `summary.json`: selected mode, best validation macro-F1, runtime, and explicit `test_evaluated: false`;
+- neural modes only: `best_model.pt`, `last_model.pt`, `history.csv`, `learning_curves.png`.
 
-### GPU note
-
-The flake provides the project runtime and installs PyTorch. CUDA availability depends on the host system and Nix CUDA configuration. Verify the selected runtime in a notebook before GPU training:
-
-```python
-import torch
-print(torch.__version__)
-print(torch.cuda.is_available())
-```
+No results are claimed until a Colab T4 run produces these artifacts.
