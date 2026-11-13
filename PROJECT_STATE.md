@@ -40,9 +40,9 @@ been an experiment and awaits Lead Git review.
 
 ## Git / Colab status
 
-- Current reviewed base: `4795c98d926962b468d7bd1b53f206c36f42cc1d` on `main`, ahead of `origin/main` by one prior commit.
-- Reviewed working-tree changes are uncommitted; no final consolidation commit exists yet.
-- Thin launcher pin is intentionally unset: `notebooks/colab_run.ipynb` fails closed with a SHA placeholder until the Project Lead commits, pushes, and records the reviewed commit SHA in a follow-up pin commit.
+- Stabilization source commit pushed to `origin/main`: `cbfc3d741cb00eb9eccd568a09aa60e789f37646`.
+- Thin launcher pin is `cbfc3d741cb00eb9eccd568a09aa60e789f37646`, the pushed source commit containing the reviewed provider, checkpoint-metrics, documentation, and safety changes.
+- This follow-up pin commit documents the source pin; it does not change execution code beyond the launcher value.
 - Repository remote: `git@github.com:james-chula/deep_learning_term_project.git`.
 - Only Project Lead performs Git commits/pushes/pulls.
 
@@ -62,4 +62,4 @@ Removed as obsolete after active replacement: old separate baseline runner, metr
 
 **Blocker:** no Colab T4 execution authorization for the final Lead-reviewed pinned commit.
 **Owner:** Project Lead for Git/pin; user for explicit execution approval.
-**Next action:** Project Lead commits and pushes the reviewed stabilization set, then makes a follow-up launcher-pin commit that names the first pushed source commit. No Colab run is authorized by this Git action alone.
+**Next action:** Project Lead pushes the follow-up launcher-pin commit, then waits for explicit user authorization before any Colab T4 run. No Colab run is authorized by this Git action alone.
