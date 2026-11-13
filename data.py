@@ -11,20 +11,20 @@ from torchvision import transforms
 from bloodmnist_baselines import build_provider_datasets
 
 
-def make_transforms():
+def make_transforms(image_size):
     """Resize 28px images to 224px; use augmentation only while training."""
     normalize = transforms.Normalize(
         mean=(0.485, 0.456, 0.406),
         std=(0.229, 0.224, 0.225),
     )
     train_transform = transforms.Compose([
-        transforms.Resize((224, 224)),
+        transforms.Resize((image_size, image_size)),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         normalize,
     ])
     validation_transform = transforms.Compose([
-        transforms.Resize((224, 224)),
+        transforms.Resize((image_size, image_size)),
         transforms.ToTensor(),
         normalize,
     ])
@@ -36,7 +36,7 @@ def get_data_loaders(config):
 
     Raises an error if the approved provider does not prove the locked-test policy.
     """
-    train_transform, validation_transform = make_transforms()
+    train_transform, validation_transform = make_transforms(config["image_size"])
     subset_path = config["subset_manifest_path"] if config["use_fixed_1pct_subset"] else None
     datasets = build_provider_datasets(
         audit_manifest_path=Path(config["audit_manifest_path"]),

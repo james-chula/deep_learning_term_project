@@ -40,6 +40,23 @@ def require_t4():
     return gpu_name
 
 
+def package_versions():
+    import matplotlib
+    import medmnist
+    import sklearn
+    import torchvision
+
+    return {
+        "python": __import__("sys").version,
+        "torch": torch.__version__,
+        "torchvision": torchvision.__version__,
+        "medmnist": medmnist.__version__,
+        "scikit_learn": sklearn.__version__,
+        "matplotlib": matplotlib.__version__,
+        "resnet18_weights": "IMAGENET1K_V1",
+    }
+
+
 def current_commit():
     try:
         return subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
@@ -98,6 +115,7 @@ def main():
         "provider": provider_metadata,
         "git_commit": current_commit(),
         "gpu": gpu_name,
+        "package_versions": package_versions(),
         "test_evaluated": False,
     }
     (output_folder / "run_metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")

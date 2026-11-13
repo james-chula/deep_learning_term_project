@@ -1,0 +1,5 @@
+# Non-PyTorch packages installed by the thin Colab launcher.
+# Google Colab supplies the CUDA-compatible torch and torchvision build.
+medmnist==3.0.2
+scikit-learn==1.5.2
+matplotlib==3.9.2

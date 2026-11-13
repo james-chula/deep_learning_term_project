@@ -133,3 +133,23 @@ Before any experiment authorization: (1) re-verify `main == origin/main` and a c
 - Thin Colab launcher commit: `7813d4b50132a1178864a4f1a48df82d0927c233`. Its checkout cell pins the training code commit above, not an unreviewed branch tip.
 - Static verification passed for training Python sources, notebook JSON, configuration loading, and direct provider-module resolution up to the unavailable optional MedMNIST dependency. No runtime data/model operation was performed.
 - Current next action: Project Lead pushes the commits; a future authorized run must use the Colab T4 launcher and retain generated validation-only artifacts.
+
+## Simplified procedural training implementation — 13 November 2026, 11:34 Asia/Bangkok
+
+**Decision:** User approved replacing the hard-to-read training execution path with a small procedural workflow. The prior modular package remains in the repository as historical integration work, but the designated first-run entry point is now the following root-level files:
+
+- `config.py`: one editable plain dictionary for experiment settings;
+- `data.py`: direct import of `bloodmnist_baselines.build_provider_datasets`, creation of training and validation loaders, and verification that `test_policy=locked_not_loaded`;
+- `model.py`: pretrained ResNet-18 with an 8-class output layer;
+- `train.py`: direct `train_one_epoch` and `validate` functions;
+- `run_experiment.py`: simple top-to-bottom T4-only execution, validation macro-F1 selection, and basic artifacts.
+
+**Rationale:** The project team is out of practice with Python. The new entry point eliminates the CLI, YAML configuration, dynamic provider import, orchestration layers, resume/fingerprint machinery, and event abstraction from the learning path while retaining required split safety, validation-only selection, T4 enforcement, Git provenance, metrics, curve, and checkpoints.
+
+**Safety invariants retained:** official 28px BloodMNIST data are resized to 224px; the provider owns audit/split/subset membership; optional committed subset is training-only; validation is official and complete; no test object is requested, constructed, or returned; best model selection uses validation macro-F1 only; no experiment is run outside Colab T4.
+
+**Expected/current implementation commit before launcher/document commit:** `9dc2b4b7d8f34e35bdd80d1afd44077e0becb6a0` (`feat: add simple procedural training workflow`).
+
+**Evidence:** static Python compilation for all five simple files passed. No data download, model download, GPU runtime, metrics, checkpoint, or experiment was created.
+
+**Next action:** finish static review of simplified launcher/documentation, commit/push them, then await explicit Colab execution authorization. Last updated: 13 November 2026, 11:34 Asia/Bangkok.
