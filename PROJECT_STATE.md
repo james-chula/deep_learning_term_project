@@ -1,6 +1,6 @@
 # Project state
 
-**Last updated:** 13 November 2026, 21:24 Asia/Bangkok
+**Last updated:** 14 November 2026, 09:02 Asia/Bangkok
 **Project:** BloodMNIST Deep Learning Term Project
 **Execution status:** Stage-by-stage progress-report Colab workflow implemented and statically verified. The user supplied one completed validation result (accuracy 0.7383, macro-F1 0.6956, macro OvR ROC-AUC 0.9613; n=1,712), but its run provenance/artifact bundle still requires verification before formal report inclusion.
 
@@ -96,3 +96,8 @@ Added `display_class_name()` to modular Python and updated the notebook sample v
 ## 13 November 2026, 21:24 Asia/Bangkok — safe Colab reclone working directory
 
 Added the Colab content-directory change before removing and cloning the project checkout, preventing stale-current-directory failures when the setup cell is rerun from inside the prior checkout. Notebook structure check and diff check passed. No experiment ran. Launcher fix commit: ff691e9c.
+
+
+## 14 November 2026, 09:02 Asia/Bangkok — resilient Colab imports after reclone
+
+Updated the Colab configuration cell to remove stale project paths, clear Python importer-cache entries for /content/project and /content/project/src, invalidate import caches, and discard a stale config module before import. The cell now also fails early if /content/project/config.py is absent. This addresses intermittent ModuleNotFoundError after deleting and recreating the checkout at the same path in a live Colab kernel. Notebook JSON validation and diff checks passed. No experiment ran. Expected commit: pending this Git operation.
