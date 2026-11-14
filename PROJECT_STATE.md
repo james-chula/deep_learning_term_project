@@ -101,3 +101,8 @@ Added the Colab content-directory change before removing and cloning the project
 ## 14 November 2026, 09:02 Asia/Bangkok — resilient Colab imports after reclone
 
 Updated the Colab configuration cell to remove stale project paths, clear Python importer-cache entries for /content/project and /content/project/src, invalidate import caches, and discard a stale config module before import. The cell now also fails early if /content/project/config.py is absent. This addresses intermittent ModuleNotFoundError after deleting and recreating the checkout at the same path in a live Colab kernel. Notebook JSON validation and diff checks passed. No experiment ran. Expected commit: pending this Git operation.
+
+
+## 14 November 2026, 10:51 Asia/Bangkok — identified multi-run Colab batch
+
+The thin Colab notebook now accepts a validated `RUN_CONFIGS` list whose entries contain a unique notebook run ID and repository-config overrides. A fresh copy of repository defaults is applied for each run to prevent cross-run leakage. Notebook-only orchestration functions repeat the existing modular data/model/training/evaluation APIs sequentially. Per-run exceptions are recorded with the run ID, error type, message, and traceback; the batch continues with later runs and prints a final status list plus explicit failed IDs. Successful runs retain independent evidence ZIPs and are collected with `batch_results.json` in a batch ZIP. Duplicate IDs/run names, unknown config keys, and invalid modes fail before execution. Static suite: 14 tests passed; notebook JSON validation passed. No dataset or experiment was run on the Team Computer. Expected source commit: pending Git operation; launcher pin will be updated to the resulting source commit.

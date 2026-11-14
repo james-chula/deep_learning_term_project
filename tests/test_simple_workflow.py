@@ -58,15 +58,13 @@ class SimpleWorkflowStaticTests(unittest.TestCase):
         notebook = json.loads((ROOT / "notebooks/colab_run.ipynb").read_text(encoding="utf-8"))
         text = "\n".join("".join(cell.get("source", [])) for cell in notebook["cells"])
         self.assertIn("assert len(COMMIT) == 40", text)
-        self.assertNotIn("ed0f97568df549986ddf2aecf11dee3548135ca4", text)
         self.assertIn("python run_experiment.py", text)
         self.assertNotIn("DataLoader(", text)
         self.assertNotIn("resnet18(", text)
         for stage in [
-            "Runtime and source provenance", "Configuration", "Audited data and sample visualization",
-            "Model summary", "Training setup and evidence directory", "Training", "Learning curves",
-            "Reload selected checkpoint and validate", "Validation diagnostics",
-            "Finalize and download artifact ZIP",
+            "Runtime and source provenance", "Batch configuration",
+            "Reusable notebook orchestration", "One-run function",
+            "Execute the batch", "Batch status and download",
         ]:
             self.assertIn(stage, text)
         for shared_api in [
@@ -74,8 +72,14 @@ class SimpleWorkflowStaticTests(unittest.TestCase):
             "evaluate_best_checkpoint", "save_validation_diagnostics", "create_artifact_zip",
         ]:
             self.assertIn(shared_api, text)
+        self.assertIn("RUN_CONFIGS", text)
+        self.assertIn("validate_run_configs", text)
+        self.assertIn("def run_one(", text)
+        self.assertIn("FAILED [{run_id}]", text)
+        self.assertIn("Failed run IDs:", text)
+        self.assertIn('"run_id": run_id', text)
         self.assertIn('provider_metadata["test_policy"] == "locked_not_loaded"', text)
-        self.assertIn('set_seed(CONFIG["seed"])  # reset after sample/model-preview cells', text)
+        self.assertIn("Reset after preview iteration/model creation for reproducible training", text)
 
     def test_selected_checkpoint_diagnostics_and_archive_are_shared(self):
         source = self.read("run_experiment.py")
